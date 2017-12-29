@@ -50,6 +50,26 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
             sideNav?.setNavigationItemSelectedListener(this)
         }
 
+        override fun onPause() {
+            super.onPause()
+        }
+
+        override fun onStart() {
+            super.onStart()
+        }
+
+        override fun onStop() {
+            super.onStop()
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+        }
+
+        override fun onResume() {
+            super.onResume()
+        }
+
         open fun onBackButtonPressed() {}
 
         override fun onBackPressed() {

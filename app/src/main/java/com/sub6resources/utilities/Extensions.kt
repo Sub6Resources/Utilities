@@ -6,12 +6,12 @@ import android.app.NotificationManager
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.content.res.ColorStateList
 import android.net.wifi.WifiManager
+import android.os.BatteryManager
 import android.os.Build
+import android.os.Environment
 import android.support.annotation.PluralsRes
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
@@ -165,6 +165,16 @@ val Context.wifiManager: WifiManager
 private val version: Int
     get() = Build.VERSION.SDK_INT
 
+val externalStoragePath: String
+    get() = Environment.getExternalStorageDirectory().path
+
+val Context.charging: Boolean
+    get() {
+        val intent = this.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
+        return plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB
+    }
+
 inline fun apiOr(version: Int, action_greater: () -> Unit, action_lower: () -> Unit, inclusive: Boolean = false) {
     fromApi(version, action_greater, inclusive)
     toApi(version, action_lower, inclusive)
@@ -195,6 +205,12 @@ fun String?.isNothing(): Boolean {
 }
 
 fun String.unescape(): String = this.replace("""\/""", "/")
+
+fun String.removeFileExtension(): String = if(this.contains(".") && this.lastIndexOf(".") > 0) { this.substring(0, this.lastIndexOf("."))} else {this}
+
+fun String.removeFileName(): String = if(this.contains("/") && this.lastIndexOf("/") > 0) { this.substring(0, this.lastIndexOf("/")+1)} else {this}
+
+fun String.append(s: String): String = this.plus(s)
 
 fun View.bulkClick(ids: Array<Int>, _onClick: (View) -> Unit) {
     ids.forEach { findViewById<View>(it).apply { onClick { v -> _onClick.invoke(v) } } }
