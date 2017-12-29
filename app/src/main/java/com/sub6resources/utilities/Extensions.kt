@@ -3,6 +3,9 @@ package com.sub6resources.utilities
 import android.app.Activity
 import android.app.Dialog
 import android.app.NotificationManager
+import android.arch.lifecycle.LifecycleOwner
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
@@ -262,10 +265,6 @@ fun SpannableStringBuilder.appendWithSpan(str: String, ss: Any) {
     this.setSpan(ss, start, this.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 }
 
-fun String.tearsOfJoy(): String {
-    return "\uD83D\uDE02\uD83D\uDE02\uD83D\uDE02"
-}
-
 
 // Bind a view.
 fun <V : View> View.bind(id: Int): ReadOnlyProperty<View, V> = required(id, { find(it) })
@@ -291,4 +290,12 @@ private class ViewLazy<in T, out V>(private val initializer: (T, KProperty<*>) -
         @Suppress("UNCHECKED_CAST")
         return value as V
     }
+}
+
+fun <T> LifecycleOwner.observeNotNull(data: LiveData<T>, callback: (paramater: T) -> Unit) {
+    data.observe(this, Observer {
+        it?.let{
+            callback(it)
+        }
+    })
 }

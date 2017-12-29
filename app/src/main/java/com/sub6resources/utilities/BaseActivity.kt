@@ -203,4 +203,16 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
             onDenied[requestCode]()
         }
     }
+
+    private var savedCallbacks = ArrayList<(resultCode: Int, data: Intent) -> Unit>()
+    private var currentRequestCodeIntent = 0
+
+    fun startActivityForResult(intent: Intent, callback: (resultCode: Int, data:Intent) -> Unit) {
+        savedCallbacks.add(currentRequestCodeIntent, callback)
+        startActivityForResult(intent, currentRequestCodeIntent)
+        currentRequestCodeIntent++
+    }
+    override fun onActivityResult(resultCode: Int, requestCode: Int, data: Intent) {
+        savedCallbacks[requestCode](resultCode, data)
+    }
 }
