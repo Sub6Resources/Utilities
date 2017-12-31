@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.Toolbar
 import android.view.*
 
 
@@ -11,11 +12,19 @@ abstract class BaseFragment: Fragment() {
     abstract val fragLayout: Int
 
     open val menu: Int? = null
+    open val toolbar: Int? = null
 
     val baseActivity by lazy { activity!! as BaseActivity }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(fragLayout, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        toolbar?.let {
+            baseActivity.setSupportActionBar(view.findViewById(it))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
