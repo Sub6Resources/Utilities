@@ -32,7 +32,8 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$support_version"
     compile "com.android.support:design:$support_version"
     compile 'com.afollestad.material-dialogs:core:0.9.6.0'
-    compile 'org.koin:koin-android:0.6.0'
+    compile 'org.koin:koin-android:0.8.0'
+    compile 'org.koin:koin-android-architecture:0.8.0'
     compile "android.arch.lifecycle:runtime:1.0.3"
     compile "android.arch.lifecycle:extensions:1.0.0"
 
@@ -47,4 +48,5 @@ repositories {
     google()
     jcenter()
     maven { url "https://jitpack.io" }
+    maven { url  "https://dl.bintray.com/ekito/koin" }
 }
