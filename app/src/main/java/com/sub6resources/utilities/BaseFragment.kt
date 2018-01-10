@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import org.koin.android.architecture.ext.KoinFactory
+import org.koin.android.architecture.ext.getViewModel
 
 
 abstract class BaseFragment: Fragment() {
@@ -78,7 +79,8 @@ abstract class BaseFragment: Fragment() {
         (context as BaseActivity).openSideNav()
     }
 
-    //fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
+    fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
+    fun <T: ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
     inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): T {
         val vm = ViewModelProvider(ViewModelStores.of(this.activity!!), KoinFactory)
         return vm.get(T::class.java)
