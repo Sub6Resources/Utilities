@@ -76,6 +76,32 @@ class FragmentTransaction(private val fragment: Fragment, private val manager: F
         }.commit()
         manager.executePendingTransactions()
     }
+
+    fun showFragment() {
+        manager.beginTransaction()
+                .extraLogic()
+                .show(manager.findFragmentById(container)).apply {
+            if (tag != null) { add(container, fragment, tag) } else { add(container, fragment) }
+            twoWayAnimation?.let { setCustomAnimations(it.enter, it.exit, it.popEnter, it.popExit) }
+            oneWayAnimation?.let { setCustomAnimations(it.enter, it.exit) }
+            transitionType?.let { setTransition(it) }
+            transitionResource?.let { setTransitionStyle(it) }
+        }.commit()
+        manager.executePendingTransactions()
+    }
+
+    fun hideFragment() {
+        manager.beginTransaction()
+                .extraLogic()
+                .hide(manager.findFragmentById(container)).apply {
+            if (tag != null) { add(container, fragment, tag) } else { add(container, fragment) }
+            twoWayAnimation?.let { setCustomAnimations(it.enter, it.exit, it.popEnter, it.popExit) }
+            oneWayAnimation?.let { setCustomAnimations(it.enter, it.exit) }
+            transitionType?.let { setTransition(it) }
+            transitionResource?.let { setTransitionStyle(it) }
+        }.commit()
+        manager.executePendingTransactions()
+    }
 }
 
 data class TwoWayFragmentAnimation(@AnimRes val enter: Int, @AnimRes val exit: Int, @AnimRes val popEnter: Int, @AnimRes val popExit: Int)

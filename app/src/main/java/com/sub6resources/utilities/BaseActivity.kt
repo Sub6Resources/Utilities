@@ -120,16 +120,33 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
 
         open fun setUp(){}
 
-        fun addFragment(fragment: BaseFragment){
+        fun addFragment(fragment: BaseFragment) {
             FragmentTransaction(fragment, supportFragmentManager)
                     .into(fragmentTargets)
                     .addFragment()
         }
 
-        fun switchFragment(fragment: BaseFragment){
+        fun switchFragment(fragment: BaseFragment) {
             FragmentTransaction(fragment, supportFragmentManager)
                     .into(fragmentTargets)
                     .switchFragment()
+        }
+
+        fun showFragment(fragment: BaseFragment) {
+            FragmentTransaction(fragment, supportFragmentManager)
+                    .into(fragmentTargets)
+                    .showFragment()
+        }
+
+        fun hideFragment(fragment: BaseFragment) {
+            FragmentTransaction(fragment, supportFragmentManager)
+                    .into(fragmentTargets)
+                    .hideFragment()
+        }
+
+        fun hideShowFragment(fragmentToHide: BaseFragment, fragmentToShow: BaseFragment) {
+            hideFragment(fragmentToHide)
+            showFragment(fragmentToShow)
         }
 
         fun popFragment(){
