@@ -1,6 +1,8 @@
 package com.sub6resources.utilities
 
 import android.Manifest
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -252,4 +254,6 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         savedCallbacks[requestCode](resultCode, data)
     }
+
+    fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
 }
