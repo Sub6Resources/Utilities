@@ -42,7 +42,7 @@ open class PermissionActivity: AppCompatActivity() {
      *
      * @see recheckPermission(requestCode: Int)
      */
-    fun checkPermission(permission: String, onGranted: () -> Unit = {}, onDenied: () -> Unit = {}, showExplanation: (requestCode: Int) -> Unit = {}) {
+    @JvmOverloads fun checkPermission(permission: String, onGranted: () -> Unit = {}, onDenied: () -> Unit = {}, showExplanation: (requestCode: Int) -> Unit = {recheckPermission(it)}) {
         this.savedPermissions.add(currentRequestCode, permission)
         this.onGranted.add(currentRequestCode, onGranted)
         this.onDenied.add(currentRequestCode, onDenied)
@@ -83,7 +83,7 @@ open class PermissionActivity: AppCompatActivity() {
         }
     }
 
-    fun checkListOfPermissions(permissions: Array<String>, onGranted: (permission: String) -> Unit, onDenied: (permission: String) -> Unit, showExplanation: (permission: String, requestCode: Int) -> Unit) {
+    @JvmOverloads fun checkListOfPermissions(permissions: Array<String>, onGranted: (permission: String) -> Unit = {}, onDenied: (permission: String) -> Unit = {}, showExplanation: (permission: String, requestCode: Int) -> Unit = {_,id -> recheckPermission(id)}) {
         for (permission in permissions) {
             checkPermission(permission, { onGranted(permission) }, { onDenied(permission) }, { showExplanation(permission, it) })
         }
