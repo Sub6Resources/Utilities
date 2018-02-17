@@ -6,7 +6,7 @@ Add utilites to your Android project using Jitpack and Gradle:
     maven {url 'https://jitpack.io'}
     ...
     dependencies {
-      compile 'com.github.Sub6Resources:Utilities:1.1.8'
+      compile 'com.github.Sub6Resources:Utilities:1.1.9'
     }
 
 
@@ -71,5 +71,9 @@ Example usage:
                     });
          ...
      }
+     
+ Condensed version:
+ 
+     checkListOfPermissions(new String[] {Manifest.permission.CAMERA, Manifest.permission.READ_SMS})
                 
 This is the most basic java example for the PermissionActivity. It will show a dialog for all permissions and if a permission is denied, will continue to show the dialog until the permission is granted.
