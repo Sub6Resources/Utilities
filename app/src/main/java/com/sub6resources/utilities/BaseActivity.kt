@@ -48,7 +48,11 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 if(parentActivityIntent != null) {
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 }
+                drawer?.let {
+                    supportActionBar?.setDisplayShowHomeEnabled(true)
+                }
             }
+
             sideNav?.setNavigationItemSelectedListener(this)
         }
 
