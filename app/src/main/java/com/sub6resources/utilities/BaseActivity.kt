@@ -113,6 +113,10 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 val intent = NavUtils.getParentActivityIntent(this)
                 intent!!.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 NavUtils.navigateUpTo(this, intent)
+
+                drawer?.let {
+                    openSideNav()
+                }
                 return true
             }
         }
