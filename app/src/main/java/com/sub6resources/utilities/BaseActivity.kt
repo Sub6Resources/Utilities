@@ -13,6 +13,7 @@ import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 
@@ -49,7 +50,6 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 }
                 drawer?.let {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
                     supportActionBar?.setHomeButtonEnabled(true)
                 }
             }
@@ -120,7 +120,11 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     }
 
         open fun openSideNav(){
-            drawer?.openDrawer(sideNav!!)
+            if(sideNav != null) {
+                drawer?.openDrawer(sideNav!!)
+            } else {
+                Log.e("BaseActivity", "sideNav must also be overridden for the drawer to work.")
+            }
         }
 
         open fun onNavItemSelected(item: MenuItem){}
