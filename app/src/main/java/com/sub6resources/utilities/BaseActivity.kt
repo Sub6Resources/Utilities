@@ -49,7 +49,8 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 }
                 drawer?.let {
-                    supportActionBar?.setDisplayShowHomeEnabled(true)
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    supportActionBar?.setHomeButtonEnabled(true)
                 }
             }
 
