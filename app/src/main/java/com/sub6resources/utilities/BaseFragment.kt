@@ -75,9 +75,9 @@ abstract class BaseFragment: Fragment() {
         fragmentManager?.popBackStack()
     }
 
-    fun openSideNav(){
-        (context as BaseActivity).openSideNav()
-    }
+//    fun openSideNav(){
+//        (context as BaseActivity).openSideNav()
+//    }
 
     fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
     fun <T: ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
