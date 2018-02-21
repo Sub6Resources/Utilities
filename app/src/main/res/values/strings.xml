@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Utilities</string>
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_closed">Close Drawer</string>
 </resources>

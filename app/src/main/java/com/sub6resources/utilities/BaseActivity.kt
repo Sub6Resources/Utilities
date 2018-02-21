@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
@@ -12,10 +13,12 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 
 /**
  * Copyright (c) 2017 Matthew Whitaker.
@@ -28,6 +31,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         open val drawer: DrawerLayout? = null
         open val sideNav: NavigationView? = null
 
+        private lateinit var mDrawerToggle: ActionBarDrawerToggle
 
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +58,25 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 }
             }
 
+            drawer?.let {
+                mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
+                        R.string.drawer_open, R.string.drawer_closed) {
+
+                    /** Called when a drawer has settled in a completely open state.  */
+                    override fun onDrawerOpened(drawerView: View) {}
+
+                    /** Called when a drawer has settled in a completely closed state.  */
+                    override fun onDrawerClosed(view: View) {}
+                }
+                setupDrawer()
+            }
+
             sideNav?.setNavigationItemSelectedListener(this)
+        }
+
+        open fun setupDrawer() {
+            mDrawerToggle.isDrawerIndicatorEnabled = true
+            drawer?.addDrawerListener(mDrawerToggle)
         }
 
         override fun onPause() {
@@ -113,23 +135,37 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 val intent = NavUtils.getParentActivityIntent(this)
                 intent!!.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 NavUtils.navigateUpTo(this, intent)
-
-                drawer?.let {
-                    openSideNav()
-                }
+            }
+        }
+        drawer?.let {
+            if (mDrawerToggle.onOptionsItemSelected(item)) {
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-        open fun openSideNav(){
-            if(sideNav != null) {
-                drawer?.openDrawer(sideNav!!)
-            } else {
-                Log.e("BaseActivity", "sideNav must also be overridden for the drawer to work.")
-            }
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        drawer?.let {
+            mDrawerToggle.syncState()
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        drawer?.let {
+            mDrawerToggle.onConfigurationChanged(newConfig)
+        }
+    }
+
+//        open fun openSideNav(){
+//            if(sideNav != null) {
+//                drawer?.openDrawer(sideNav!!)
+//            } else {
+//                Log.e("BaseActivity", "sideNav must also be overridden for the drawer to work.")
+//            }
+//        }
 
         open fun onNavItemSelected(item: MenuItem){}
 
