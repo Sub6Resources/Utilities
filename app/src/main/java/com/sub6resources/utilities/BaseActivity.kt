@@ -24,93 +24,75 @@ import android.view.View
  * Copyright (c) 2017 Matthew Whitaker.
  */
 abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-        open val menu: Int? = null
-        open val toolbar: Int? = null
-        open val fragmentTargets: Int = 0
-        open val landingFragment: BaseFragment? = null
-        open val drawer: DrawerLayout? = null
-        open val sideNav: NavigationView? = null
+    open val menu: Int? = null
+    open val toolbar: Int? = null
+    open val fragmentTargets: Int = 0
+    open val landingFragment: BaseFragment? = null
+    open val drawer: DrawerLayout? = null
+    open val sideNav: NavigationView? = null
 
-        private lateinit var mDrawerToggle: ActionBarDrawerToggle
+    private lateinit var mDrawerToggle: ActionBarDrawerToggle
 
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            setContentView(activityLayout)
-            setUp()
-            landingFragment?.let {
-                FragmentTransaction(it, supportFragmentManager).into(fragmentTargets).switchFragment()
-                fragmentTargets.let {
-                    if(savedInstanceState == null){
-                        FragmentTransaction(landingFragment as Fragment, supportFragmentManager)
-                                .into(fragmentTargets)
-                                .switchFragment()
-                    }
-                }
-            }
-            toolbar?.let {
-                setSupportActionBar(findViewById(it))
-                if(parentActivityIntent != null) {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                }
-                drawer?.let {
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                    supportActionBar?.setHomeButtonEnabled(true)
-                    mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
-                            R.string.drawer_open, R.string.drawer_closed) {
-
-                        /** Called when a drawer has settled in a completely open state.  */
-                        override fun onDrawerOpened(drawerView: View) {}
-
-                        /** Called when a drawer has settled in a completely closed state.  */
-                        override fun onDrawerClosed(view: View) {}
-                    }
-                    setupDrawer()
-                }
-            }
-            sideNav?.setNavigationItemSelectedListener(this)
-        }
-
-        open fun setupDrawer() {
-            mDrawerToggle.isDrawerIndicatorEnabled = true
-            drawer!!.addDrawerListener(mDrawerToggle)
-        }
-
-        override fun onPause() {
-            super.onPause()
-        }
-
-        override fun onStart() {
-            super.onStart()
-        }
-
-        override fun onStop() {
-            super.onStop()
-        }
-
-        override fun onDestroy() {
-            super.onDestroy()
-        }
-
-        override fun onResume() {
-            super.onResume()
-        }
-
-        open fun onBackButtonPressed() {}
-
-        override fun onBackPressed() {
-
-            onBackButtonPressed()
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(activityLayout)
+        setUp()
+        landingFragment?.let {
+            FragmentTransaction(it, supportFragmentManager).into(fragmentTargets).switchFragment()
             fragmentTargets.let {
-                val frag = supportFragmentManager.findFragmentById(fragmentTargets)
-                if(frag is BaseFragment){
-                    frag.onBackPressed()
-                    return
+                if(savedInstanceState == null){
+                    FragmentTransaction(landingFragment as Fragment, supportFragmentManager)
+                            .into(fragmentTargets)
+                            .switchFragment()
                 }
             }
-            super.onBackPressed()
         }
+        toolbar?.let {
+            setSupportActionBar(findViewById(it))
+            if(parentActivityIntent != null) {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            }
+            drawer?.let {
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.setHomeButtonEnabled(true)
+                mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
+                        R.string.drawer_open, R.string.drawer_closed) {
+
+                    /** Called when a drawer has settled in a completely open state.  */
+                    override fun onDrawerOpened(drawerView: View) { drawerOpened(drawerView) }
+
+                    /** Called when a drawer has settled in a completely closed state.  */
+                    override fun onDrawerClosed(view: View) { drawerClosed(view) }
+                }
+                setupDrawer()
+            }
+        }
+        sideNav?.setNavigationItemSelectedListener(this)
+    }
+
+    open fun setupDrawer() {
+        mDrawerToggle.isDrawerIndicatorEnabled = true
+        drawer!!.addDrawerListener(mDrawerToggle)
+    }
+
+    open fun drawerOpened(drawerView: View) {}
+    open fun drawerClosed(view: View) {}
+
+    open fun onBackButtonPressed() {}
+
+    override fun onBackPressed() {
+        onBackButtonPressed()
+
+        fragmentTargets.let {
+            val frag = supportFragmentManager.findFragmentById(fragmentTargets)
+            if(frag is BaseFragment){
+                frag.onBackPressed()
+                return
+            }
+        }
+        super.onBackPressed()
+    }
 
         override fun onCreateOptionsMenu(_menu: Menu): Boolean {
             menu.isNotNull {
@@ -158,55 +140,51 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         }
     }
 
-//        open fun openSideNav(){
-//            if(sideNav != null) {
-//                drawer?.openDrawer(sideNav!!)
-//            } else {
-//                Log.e("BaseActivity", "sideNav must also be overridden for the drawer to work.")
-//            }
-//        }
+    /**
+     * Use this method instead of @onNavigationItemSelected for implementation with a navigation drawer.
+     */
+    open fun onNavItemSelected(item: MenuItem){}
 
-        open fun onNavItemSelected(item: MenuItem){}
+    open fun setUp(){}
 
-        open fun setUp(){}
+    //Fragment Transactions
+    fun addFragment(fragment: BaseFragment) {
+        FragmentTransaction(fragment, supportFragmentManager)
+                .into(fragmentTargets)
+                .addFragment()
+    }
 
-        fun addFragment(fragment: BaseFragment) {
-            FragmentTransaction(fragment, supportFragmentManager)
-                    .into(fragmentTargets)
-                    .addFragment()
-        }
+    fun switchFragment(fragment: BaseFragment) {
+        FragmentTransaction(fragment, supportFragmentManager)
+                .into(fragmentTargets)
+                .switchFragment()
+    }
 
-        fun switchFragment(fragment: BaseFragment) {
-            FragmentTransaction(fragment, supportFragmentManager)
-                    .into(fragmentTargets)
-                    .switchFragment()
-        }
+    fun showFragment(fragment: BaseFragment) {
+        FragmentTransaction(fragment, supportFragmentManager)
+                .into(fragmentTargets)
+                .showFragment()
+    }
 
-        fun showFragment(fragment: BaseFragment) {
-            FragmentTransaction(fragment, supportFragmentManager)
-                    .into(fragmentTargets)
-                    .showFragment()
-        }
+    fun hideFragment(fragment: BaseFragment) {
+        FragmentTransaction(fragment, supportFragmentManager)
+                .into(fragmentTargets)
+                .hideFragment()
+    }
 
-        fun hideFragment(fragment: BaseFragment) {
-            FragmentTransaction(fragment, supportFragmentManager)
-                    .into(fragmentTargets)
-                    .hideFragment()
-        }
+    fun hideShowFragment(fragmentToHide: BaseFragment, fragmentToShow: BaseFragment) {
+        hideFragment(fragmentToHide)
+        showFragment(fragmentToShow)
+    }
 
-        fun hideShowFragment(fragmentToHide: BaseFragment, fragmentToShow: BaseFragment) {
-            hideFragment(fragmentToHide)
-            showFragment(fragmentToShow)
-        }
+    fun popFragment(){
+        fragmentManager?.popBackStack()
+    }
 
-        fun popFragment(){
-            fragmentManager?.popBackStack()
-        }
-
-        fun popAdd(fragment: BaseFragment){
-            fragmentManager?.popBackStack()
-            addFragment(fragment)
-        }
+    fun popAdd(fragment: BaseFragment){
+        fragmentManager?.popBackStack()
+        addFragment(fragment)
+    }
 
     //Private variables to assist with the checkPermission function.
     private var onGranted: ArrayList<() -> Unit> = ArrayList<() -> Unit>()
