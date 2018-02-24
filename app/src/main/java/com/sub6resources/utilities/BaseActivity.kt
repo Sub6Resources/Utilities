@@ -56,28 +56,24 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 drawer?.let {
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                     supportActionBar?.setHomeButtonEnabled(true)
+                    mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
+                            R.string.drawer_open, R.string.drawer_closed) {
+
+                        /** Called when a drawer has settled in a completely open state.  */
+                        override fun onDrawerOpened(drawerView: View) {}
+
+                        /** Called when a drawer has settled in a completely closed state.  */
+                        override fun onDrawerClosed(view: View) {}
+                    }
+                    setupDrawer()
                 }
             }
-
-            drawer?.let {
-                mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
-                        R.string.drawer_open, R.string.drawer_closed) {
-
-                    /** Called when a drawer has settled in a completely open state.  */
-                    override fun onDrawerOpened(drawerView: View) {}
-
-                    /** Called when a drawer has settled in a completely closed state.  */
-                    override fun onDrawerClosed(view: View) {}
-                }
-                setupDrawer()
-            }
-
             sideNav?.setNavigationItemSelectedListener(this)
         }
 
         open fun setupDrawer() {
             mDrawerToggle.isDrawerIndicatorEnabled = true
-            drawer?.addDrawerListener(mDrawerToggle)
+            drawer!!.addDrawerListener(mDrawerToggle)
         }
 
         override fun onPause() {
@@ -134,8 +130,10 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         when(item.itemId) {
             android.R.id.home -> {
                 val intent = NavUtils.getParentActivityIntent(this)
-                intent!!.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                NavUtils.navigateUpTo(this, intent)
+                intent?.let {
+                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    NavUtils.navigateUpTo(this, it)
+                }
             }
         }
         drawer?.let {
