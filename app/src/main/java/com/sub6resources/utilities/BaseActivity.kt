@@ -56,17 +56,20 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
             drawer?.let {
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 supportActionBar?.setHomeButtonEnabled(true)
-                mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
-                        R.string.drawer_open, R.string.drawer_closed) {
-
-                    /** Called when a drawer has settled in a completely open state.  */
-                    override fun onDrawerOpened(drawerView: View) { drawerOpened(drawerView) }
-
-                    /** Called when a drawer has settled in a completely closed state.  */
-                    override fun onDrawerClosed(view: View) { drawerClosed(view) }
-                }
-                setupDrawer()
             }
+        }
+
+        drawer?.let {
+            mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
+                    R.string.drawer_open, R.string.drawer_closed) {
+
+                /** Called when a drawer has settled in a completely open state.  */
+                override fun onDrawerOpened(drawerView: View) { drawerOpened(drawerView) }
+
+                /** Called when a drawer has settled in a completely closed state.  */
+                override fun onDrawerClosed(view: View) { drawerClosed(view) }
+            }
+            setupDrawer()
         }
         sideNav?.setNavigationItemSelectedListener(this)
     }
