@@ -266,6 +266,16 @@ fun SeekBar.minMaxProgressListener(min: Int, max: Int, onValueChanged: (value: I
     })
 }
 
+fun SeekBar.onProgressChanged(function: (progress: Int, fromUser: Boolean) -> Unit) {
+    this.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            function(progress, fromUser)
+        }
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    })
+}
+
 // Find a view.  Not lazy.
 inline fun <reified V : View> View.find(id: Int): V = findViewById<V>(id)
 

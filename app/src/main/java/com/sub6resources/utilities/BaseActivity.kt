@@ -15,29 +15,28 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
 /**
- * Copyright (c) 2017 Matthew Whitaker.
+ * Copyright (c) 2018 Matthew Whitaker.
  */
 abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     open val menu: Int? = null
     open val toolbar: Int? = null
     open val fragmentTargets: Int = 0
     open val landingFragment: BaseFragment? = null
+
     open val drawer: DrawerLayout? = null
     open val sideNav: NavigationView? = null
 
-    private lateinit var mDrawerToggle: ActionBarDrawerToggle
+    private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activityLayout)
-        setUp()
         landingFragment?.let {
             FragmentTransaction(it, supportFragmentManager).into(fragmentTargets).switchFragment()
             fragmentTargets.let {
@@ -58,9 +57,8 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 supportActionBar?.setHomeButtonEnabled(true)
             }
         }
-
         drawer?.let {
-            mDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
+            actionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawer,
                     R.string.drawer_open, R.string.drawer_closed) {
 
                 /** Called when a drawer has settled in a completely open state.  */
@@ -69,14 +67,11 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 /** Called when a drawer has settled in a completely closed state.  */
                 override fun onDrawerClosed(view: View) { drawerClosed(view) }
             }
-            setupDrawer()
+            it.addDrawerListener(actionBarDrawerToggle!!)
         }
         sideNav?.setNavigationItemSelectedListener(this)
-    }
 
-    open fun setupDrawer() {
-        mDrawerToggle.isDrawerIndicatorEnabled = true
-        drawer!!.addDrawerListener(mDrawerToggle)
+        setUp()
     }
 
     open fun drawerOpened(drawerView: View) {}
@@ -121,10 +116,8 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                 }
             }
         }
-        drawer?.let {
-            if (mDrawerToggle.onOptionsItemSelected(item)) {
-                return true
-            }
+        if (actionBarDrawerToggle?.onOptionsItemSelected(item) == true) {
+            return true
         }
         return super.onOptionsItemSelected(item)
     }
@@ -132,14 +125,14 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         drawer?.let {
-            mDrawerToggle.syncState()
+            actionBarDrawerToggle?.syncState()
         }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         drawer?.let {
-            mDrawerToggle.onConfigurationChanged(newConfig)
+            actionBarDrawerToggle?.onConfigurationChanged(newConfig)
         }
     }
 
