@@ -6,21 +6,27 @@ import android.app.NotificationManager
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.Transformations
 import android.content.*
+import android.content.ClipboardManager
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
-import android.support.annotation.PluralsRes
-import android.support.annotation.StringRes
+import android.support.annotation.*
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.TextWatcher
+import android.text.*
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
@@ -30,12 +36,21 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
 import com.afollestad.materialdialogs.MaterialDialog
+import com.squareup.picasso.Picasso
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 
-
+/**
+ * Converts from long to short time
+ */
 fun Long.toShortTime(): String {
     val hr = TimeUnit.MILLISECONDS.toHours(this)
     val min = TimeUnit.MILLISECONDS.toMinutes(this)
@@ -44,6 +59,11 @@ fun Long.toShortTime(): String {
     return "${if (hr != 0L) "$hr:" else ""}${if (min < 10L) "0$min" else min}:${if (sec < 10L) "0$sec" else sec}"
 }
 
+/**
+ * This function generates a save string from a list of variables.
+ * This assumes that no variable contains the character '_'
+ */
+@Deprecated("Terribly written, will be removed")
 fun generateSaveString(vararg variables: Any): String {
     var stringToReturn = ""
     variables.forEach{
@@ -56,6 +76,7 @@ fun generateSaveString(vararg variables: Any): String {
     return stringToReturn.substringBeforeLast("_")
 }
 
+@Deprecated("Terribly written, will be removed")
 fun loadFromSaveString(saveString: String, vararg setVariable: (value: String) -> Unit) {
     saveString.split("_").forEachIndexed {i, value ->
         setVariable[i](value)
@@ -63,55 +84,55 @@ fun loadFromSaveString(saveString: String, vararg setVariable: (value: String) -
 
 }
 
+/**
+ * Returns a random number between `min` and `max`
+ */
+@Throws(IndexOutOfBoundsException::class)
 fun random(min: Int, max: Int): Int {
     if(max < min) throw IndexOutOfBoundsException("Max must be greater than min")
     val range = max - min + 1
     return (Math.random() * range).toInt() + min
 }
 
+/**
+ * Returns the screen's width
+ */
 val Activity.screenWidth: Int get() {
     val metrics = DisplayMetrics()
     this.windowManager.defaultDisplay.getMetrics(metrics)
     return metrics.widthPixels
 }
 
+/**
+ * Returns the screen's height
+ */
 val Activity.screenHeight: Int get() {
     val metrics = DisplayMetrics()
     this.windowManager.defaultDisplay.getMetrics(metrics)
     return metrics.heightPixels
 }
 
-/*
-WindowManager manager = (WindowManager) getSystemService(Activity.WINDOW_SERVICE);
-    int width, height;
-    LayoutParams params;
-
-    if (Build.VERSION.SDK_INT > VERSION_CODES.FROYO) {
-        width = manager.getDefaultDisplay().getWidth();
-        height = manager.getDefaultDisplay().getHeight();
-    } else {
-        Point point = new Point();
-        manager.getDefaultDisplay().getSize(point);
-        width = point.x;
-        height = point.y;
-    }
+/**
+ * Sets the onClickListener of a view.
  */
-
 fun View.onClick(listener: View.OnClickListener) {
     setOnClickListener(listener)
 }
 
+/**
+ * Calls the callback when the view is clicked.
+ */
 fun View.onClick(onClick: (v: View) -> Unit) {
     setOnClickListener(onClick)
 }
 
+/**
+ * A simple and pretty [EditText] textChanged listener.
+ */
 fun EditText.onTextChanged(onTextChanged: (editable: Editable) -> Unit) {
     this.addTextChangedListener(object : TextWatcher {
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        }
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun afterTextChanged(editable: Editable?) {
             editable?.let {
@@ -121,53 +142,95 @@ fun EditText.onTextChanged(onTextChanged: (editable: Editable) -> Unit) {
     })
 }
 
+/**
+ * Opens a [MaterialDialog] builder
+ * @see <a href="https://github.com/afollestad/material-dialogs">https://github.com/afollestad/material-dialogs</a>
+ */
 fun Context.dialog(builder: MaterialDialog.Builder.() -> Unit): MaterialDialog {
     return MaterialDialog.Builder(this).apply {
         builder()
     }.build()
 }
 
+/**
+ * Default [SharedPreferences]
+ */
 val Context.sharedPreferences: SharedPreferences
     get() = getSharedPreferences(packageName, 0)
 
-
-fun SharedPreferences.edit(editor: SharedPreferences.Editor.() -> Unit): SharedPreferences.Editor {
-    return this.edit().apply {
+/**
+ * Performs all edits to [SharedPreferences] then applies them.
+ */
+fun SharedPreferences.edit(editor: SharedPreferences.Editor.() -> Unit) {
+    this.edit().apply {
         editor()
-    }
+    }.apply()
 }
 
+/**
+ * Gets a string from string resources
+ */
 fun Context.getStringRes(@StringRes resId: Int) = resources.getString(resId)
 
+/**
+ * Gets a plural from string resources
+ */
 fun Context.getPlural(@PluralsRes resId: Int, value: Int) = resources.getQuantityString(resId, value, value)
 
-//Requires a string set up like '$ %.2f' (using whatever currency symbol is desired) in the String Resource file.
+/**
+ * Formats a string to be like money
+ * Requires a string set up like '$ %.2f' (using whatever currency symbol is desired) in the String Resource file.
+ */
 fun Context.getMoneyString(@StringRes resId: Int, vararg amount: Int) = resources.getString(resId, *amount.map{it.toDouble()}.toTypedArray())
 
+/**
+ * Inflates a layout
+ */
 fun Context.inflateLayout(layoutResId: Int, parent: ViewGroup? = null, attachToRoot: Boolean = false): View
         = LayoutInflater.from(this).inflate(layoutResId, parent, attachToRoot)
 
+/**
+ * The system input method manager
+ */
 val Context.inputMethodManager: InputMethodManager
     get() = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
+/**
+ * The system clipboard manager
+ */
 val Context.clipboardManager: ClipboardManager
     get() = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
+/**
+ * The system layout inflater
+ */
 val Context.layoutInflater: LayoutInflater
     get() = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
+/**
+ * The system notification manager
+ */
 val Context.notificationManager: NotificationManager
     get() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+/**
+ * The context wifiManager
+ */
 val Context.wifiManager: WifiManager
     get() = applicationContext.wifiManager
 
 private val version: Int
     get() = Build.VERSION.SDK_INT
 
+/**
+ * Returns the external storage directory
+ */
 val externalStoragePath: String
     get() = Environment.getExternalStorageDirectory().path
 
+/**
+ * Returns true if the device is charging
+ */
 val Context.charging: Boolean
     get() {
         val intent = this.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -175,19 +238,41 @@ val Context.charging: Boolean
         return plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB
     }
 
+/**
+ * Calls action_greater if the android version is higher than the version, action_lower if it is lower, and both action_greater and action_lower if inclusive is true and the android version is equal to version.
+ */
 inline fun apiOr(version: Int, action_greater: () -> Unit, action_lower: () -> Unit, inclusive: Boolean = false) {
-    fromApi(version, action_greater, inclusive)
-    toApi(version, action_lower, inclusive)
+    fromApi(version, inclusive, action_greater)
+    toApi(version, inclusive, action_lower)
 }
 
+@Deprecated("To make things more pretty, action and inclusive have been switched, so if you are calling this old version, you can make it more pretty by switching them.", ReplaceWith("toApi(toVersion, inclusive, action)"))
 inline fun toApi(toVersion: Int, action: () -> Unit, inclusive: Boolean = false) {
     if (Build.VERSION.SDK_INT < toVersion || (inclusive && Build.VERSION.SDK_INT == toVersion)) action()
 }
 
+/**
+ * Calls the callback if the android version is lower than the toVersion or equal to toVersion if inclusive is true (it is not by default)
+ */
+inline fun toApi(toVersion: Int, inclusive: Boolean = false, action: () -> Unit) {
+    if (Build.VERSION.SDK_INT < toVersion || (inclusive && Build.VERSION.SDK_INT == toVersion)) action()
+}
+
+@Deprecated("To make things more pretty, action and inclusive have been switched, so if you are calling this old version, you can make it more pretty by switching them.", ReplaceWith("fromApi(fromVersion, inclusive, action)"))
 inline fun fromApi(fromVersion: Int, action: () -> Unit, inclusive: Boolean = true) {
     if (Build.VERSION.SDK_INT > fromVersion || (inclusive && Build.VERSION.SDK_INT == fromVersion)) action()
 }
 
+/**
+ * Calls the callback if the android version is higher than the fromVersion or equal to fromVersion if inclusive is true (default).
+ */
+inline fun fromApi(fromVersion: Int, inclusive: Boolean = true, action: () -> Unit) {
+    if (Build.VERSION.SDK_INT > fromVersion || (inclusive && Build.VERSION.SDK_INT == fromVersion)) action()
+}
+
+/**
+ * Tints a drawable of an [ImageView]
+ */
 fun ImageView.tintCurrentDrawable(color: Int) {
     DrawableCompat.wrap(drawable!!).let {
         it.mutate()
@@ -196,63 +281,119 @@ fun ImageView.tintCurrentDrawable(color: Int) {
     }
 }
 
+/**
+ * Checks if a string is worthless (null or just whitespace)
+ */
 fun String?.isNothing(): Boolean {
-    val strLen: Int? = this?.length
-    if (this == null || strLen == 0) return true
-    for (i in 0..strLen!!.minus(1))
-        if (Character.isWhitespace(this[i]) == false) return false
+    this?.let { string ->
+        if(string.isEmpty()) return true
+        string.forEach {
+            if(!it.isWhitespace()) return false
+        }
+    }
     return true
 }
 
+/**
+ * Unescapes a string
+ */
 fun String.unescape(): String = this.replace("""\/""", "/")
 
+/**
+ * Removes a file extension from a string if it exists
+ */
 fun String.removeFileExtension(): String = if(this.contains(".") && this.lastIndexOf(".") > 0) { this.substring(0, this.lastIndexOf("."))} else {this}
 
+/**
+ * Removes a file name from a string if it exists
+ */
 fun String.removeFileName(): String = if(this.contains("/") && this.lastIndexOf("/") > 0) { this.substring(0, this.lastIndexOf("/")+1)} else {this}
 
+@Deprecated(""+"Just use + or plus(), much faster to type", ReplaceWith("this.plus(s)"))
 fun String.append(s: String): String = this.plus(s)
 
+/**
+ * Calls a callback if any of the views is clicked
+ */
 fun View.bulkClick(ids: Array<Int>, _onClick: (View) -> Unit) {
     ids.forEach { findViewById<View>(it).apply { onClick { v -> _onClick.invoke(v) } } }
 }
 
+/**
+ * Calls a callback if any of the views is clicked
+ */
 fun Array<View>.bulkClick(_onClick: (View) -> Unit) {
     forEach { it.apply { onClick { v -> _onClick.invoke(v) } } }
 }
 
-fun String?.nullSafe(default: String = ""): String = if (this == null) default else this
+/**
+ * Does the exact same thing as an elvis operator
+ */
+@Deprecated("Just use an elvis operator!", ReplaceWith("this ?: default"))
+fun String?.nullSafe(default: String = ""): String = this ?: default
+
+/**
+ * Gets the string of an [EditText]. No more [Editable]!
+ */
 fun EditText.getString(): String = text.toString()
 
+/**
+ * Invokes a callback if null
+ */
 inline infix fun Any?.isNull(if_true: () -> Unit) {
     if (this == null) if_true.invoke()
 }
 
+/**
+ * Invokes a callback if not null
+ */
 inline infix fun Any?.isNotNull(if_true: (Any) -> Unit) {
     if (this != null) if_true.invoke(this)
 }
 
+/**
+ * Shows a view
+ */
 fun View.show() {
     visibility = View.VISIBLE
 }
 
+/**
+ * Makes a view become gone
+ */
 fun View.hide() {
     visibility = View.GONE
 }
 
+/**
+ * Makes a view invisible
+ */
 fun View.invisible() {
     visibility = View.INVISIBLE
 }
 
+/**
+ * Disables a view
+ */
 fun View.disable() {
     isEnabled = false
 }
 
+/**
+ * Enables a view
+ */
 fun View.enable() {
     isEnabled = true
 }
 
+/**
+ * Checks if an [EditText] is blank.
+ */
 fun EditText.isBlank(): Boolean = getString().isNullOrBlank()
 
+/**
+ * Adds min and max to a [SeekBar] and adds a pretty looking callback for it.
+ */
 fun SeekBar.minMaxProgressListener(min: Int, max: Int, onValueChanged: (value: Int, fromUser: Boolean) -> Unit) {
     this.max = max - min
     this.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
@@ -266,6 +407,9 @@ fun SeekBar.minMaxProgressListener(min: Int, max: Int, onValueChanged: (value: I
     })
 }
 
+/**
+ * Pretty looking callback for [SeekBar] progress changes
+ */
 fun SeekBar.onProgressChanged(function: (progress: Int, fromUser: Boolean) -> Unit) {
     this.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -276,14 +420,16 @@ fun SeekBar.onProgressChanged(function: (progress: Int, fromUser: Boolean) -> Un
     })
 }
 
-// Find a view.  Not lazy.
-inline fun <reified V : View> View.find(id: Int): V = findViewById<V>(id)
+/**
+ * Find a view.  Not lazy.
+ */
+inline fun <reified V : View> View.find(id: Int): V = findViewById(id)
 
-inline fun <reified V : View> Activity.find(id: Int): V = findViewById<V>(id)
-inline fun <reified V : View> Dialog.find(id: Int): V = findViewById<V>(id)
-inline fun <reified V : View> Fragment.find(id: Int): V = view!!.findViewById<V>(id)
-inline fun <reified V : View> android.app.Fragment.find(id: Int): V = view!!.findViewById<V>(id)
-inline fun <reified V : View> RecyclerView.ViewHolder.find(id: Int): V = itemView.findViewById<V>(id)
+inline fun <reified V : View> Activity.find(id: Int): V = findViewById(id)
+inline fun <reified V : View> Dialog.find(id: Int): V = findViewById(id)
+inline fun <reified V : View> Fragment.find(id: Int): V = view!!.findViewById(id)
+inline fun <reified V : View> android.app.Fragment.find(id: Int): V = view!!.findViewById(id)
+inline fun <reified V : View> RecyclerView.ViewHolder.find(id: Int): V = itemView.findViewById(id)
 
 fun SpannableStringBuilder.appendWithSpan(str: String, ss: Any) {
     val start = this.length
@@ -318,6 +464,9 @@ private class ViewLazy<in T, out V>(private val initializer: (T, KProperty<*>) -
     }
 }
 
+/**
+ * Observe a nullable [LiveData] as if it is not nullable. All null data returned will simply be ignored.
+ */
 fun <T> LifecycleOwner.observeNotNull(data: LiveData<T>, callback: (paramater: T) -> Unit) {
     data.observe(this, Observer {
         it?.let{
@@ -325,3 +474,99 @@ fun <T> LifecycleOwner.observeNotNull(data: LiveData<T>, callback: (paramater: T
         }
     })
 }
+
+/**
+ * Builds a simple logged [Retrofit] instance with a url for simple instantiation
+ */
+fun Retrofit.Builder.logged(baseUrl: String): Retrofit {
+    return this.apply {
+        baseUrl(baseUrl)
+        client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }).build())
+        addConverterFactory(GsonConverterFactory.create())
+        addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+    }.build()
+}
+
+/**
+ * A shortened version of Transformations.switchMap(trigger: LiveData): LiveData
+ */
+fun <T, R: Any> LiveData<T>.switchMap(switchMap: (data: T) -> LiveData<R>): LiveData<R> {
+    return Transformations.switchMap(this) { switchMap(it) }
+}
+
+/**
+ * Adds a [RecyclerView.OnScrollListener] to show or hide the FloatingActionButton when the RecyclerView scrolls up
+ * or down respectively
+ */
+fun RecyclerView.bindFloatingActionButton(fab: FloatingActionButton) = this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+    override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+        super.onScrolled(recyclerView, dx, dy)
+        if (dy > 0 && fab.isShown) {
+            fab.hide()
+        } else if (dy < 0 && !fab.isShown) {
+            fab.show()
+        }
+    }
+})
+
+/**
+ * Loads an image from a url or path into an [ImageView] using [Picasso]
+ */
+fun ImageView.load(urlOrPath: String?) {
+    Picasso.with(context)
+            .load(urlOrPath)
+            .into(this)
+}
+
+/**
+ * Loads an image from a Drawable resource into an [ImageView] using [Picasso]
+ */
+fun ImageView.load(@DrawableRes res: Int) {
+    Picasso.with(context)
+            .load(res)
+            .into(this)
+}
+
+/**
+ * Loads an image from a [Uri] into an [ImageView] using [Picasso]
+ */
+fun ImageView.load(uri: Uri) {
+    Picasso.with(context)
+            .load(uri)
+            .into(this)
+}
+
+/**
+ * Loads an image from a [File] into an [ImageView] using [Picasso]
+ */
+fun ImageView.load(file: File) {
+    Picasso.with(context)
+            .load(file)
+            .into(this)
+}
+
+/**
+ * Starts an activity with no extras.
+ */
+inline fun <reified T: Activity> Context.startActivity() {
+    this.startActivity(Intent(this, T::class.java))
+}
+
+/**
+ * Creates a [Snackbar] on a view and allows more operations to be completed on it.
+ */
+inline fun View.snackbar(message: String, length: Int = Snackbar.LENGTH_LONG, operations: Snackbar.() -> Unit) {
+    Snackbar.make(this, message, length).apply {
+        operations()
+        show()
+    }
+}
+
+/**
+ * A listener for a [Snackbar] action
+ */
+fun Snackbar.action(action: String, color: Int? = null, listener: (View) -> Unit) {
+    setAction(action, listener)
+    color?.let { setActionTextColor(color) }
+}
+

@@ -21,6 +21,8 @@ abstract class BaseFragment: Fragment() {
 
     val baseActivity by lazy { activity!! as BaseActivity }
 
+    open fun setUp() {}
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(fragLayout, container, false)
     }
@@ -30,6 +32,8 @@ abstract class BaseFragment: Fragment() {
         toolbar?.let {
             baseActivity.setSupportActionBar(view.findViewById(it))
         }
+
+        setUp()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,10 +79,13 @@ abstract class BaseFragment: Fragment() {
         fragmentManager?.popBackStack()
     }
 
+    @Deprecated("getViewModel is deprecated in favor of getViewModel<T>()")
     fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
+
+    inline fun <reified T: ViewModel> getViewModel(): Lazy<T> = lazy { (this as Fragment).getViewModel<T>() }
+
+    @Deprecated("getSharedViewModel(T::class.java) is deprecated in favor of getSharedViewModel<T>()")
     fun <T: ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
-    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): T {
-        val vm = ViewModelProvider(ViewModelStores.of(this.activity!!), KoinFactory)
-        return vm.get(T::class.java)
-    }
+
+    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): T = ViewModelProvider(ViewModelStores.of(this.activity!!), KoinFactory).get(T::class.java)
 }

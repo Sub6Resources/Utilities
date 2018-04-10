@@ -19,9 +19,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 
-/**
- * Copyright (c) 2018 Matthew Whitaker.
- */
+
 abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     open val menu: Int? = null
     open val toolbar: Int? = null

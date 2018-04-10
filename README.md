@@ -6,7 +6,7 @@ Add utilites to your Android project using Jitpack and Gradle:
     maven {url 'https://jitpack.io'}
     ...
     dependencies {
-      implementation 'com.github.Sub6Resources:Utilities:1.1.13'
+      implementation 'com.github.Sub6Resources:Utilities:1.2.0'
     }
 
 
