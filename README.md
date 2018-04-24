@@ -56,6 +56,10 @@ Add utilites to your Android project using Jitpack and Gradle:
             }
         }
     }
+    
+Here's what that code creates (don't firget to register activity in the manifest)
+    
+![Screenshot of settings activity](Screenshot_20180423-232001.png)
 
 ### PermissionActivity from Kotlin
 
