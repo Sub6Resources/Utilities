@@ -17,7 +17,7 @@ Add utilites to your Android project using Jitpack and Gradle:
     
     class PreferencesActivity: SettingsActivity() {
         override val settings = settingsActivity {
-            title = "Settingses"
+            title = "Settings"
             group("Common Settings") {
                 setting("areNotificationsEnabled", false) {
                     description = "Notifications Enabled"
