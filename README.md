@@ -58,8 +58,8 @@ Add utilites to your Android project using Jitpack and Gradle:
     }
     
 Here's what that code creates (but don't forget to register activity in the manifest)
-    
-![Screenshot of settings activity](Screenshot_20180423-232001.png =150x)
+
+<img src="Screenshot_20180423-232001.png" width="300px" />
 
 ### PermissionActivity from Kotlin
 
