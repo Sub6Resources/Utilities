@@ -65,13 +65,13 @@ abstract class BaseFragment: Fragment() {
 
     fun addFragment(fragment: BaseFragment){
         FragmentTransaction(fragment, fragmentManager!!)
-                .into((context as BaseActivity).fragmentTargets!!)
+                .into((context as BaseActivity).fragmentTargets)
                 .addFragment()
     }
 
     fun switchFragment(fragment: BaseFragment){
         FragmentTransaction(fragment, fragmentManager!!)
-                .into((context as BaseActivity).fragmentTargets!!)
+                .into((context as BaseActivity).fragmentTargets)
                 .switchFragment()
     }
 

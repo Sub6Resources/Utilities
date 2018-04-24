@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/setting_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/titles_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/setting_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="Example Setting Title" />
+
+        <TextView
+            android:id="@+id/setting_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:visibility="gone"
+            tools:text="Example Subtitle" />
+    </LinearLayout>
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/setting_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+</LinearLayout>
