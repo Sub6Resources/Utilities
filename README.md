@@ -12,7 +12,7 @@ Add utilites to your Android project using Jitpack and Gradle:
     }
     ...
     dependencies {
-      implementation 'com.github.Sub6Resources:Utilities:1.3.0'
+      implementation 'com.github.Sub6Resources:Utilities:1.3.1'
     }
 
 ## `BaseActivity`
@@ -77,15 +77,15 @@ Pops all fragments from the stack and adds a new fragment. (This makes it so tha
         }
     }
 
-## `SettingsActivity`
+## `BaseSettingsActivity`
 
-`SettingsActivity` provides a simple DSL to create an activity that interfaces with sharedPreferences automatically with a given key. 
+`BaseSettingsActivity` provides a simple DSL to create an activity that interfaces with sharedPreferences automatically with a given key. 
 
 #### A DSL for an Android Settings Activity
 
     import com.sub6resources.utilities.*
     
-    class PreferencesActivity: SettingsActivity() {
+    class PreferencesActivity: BaseSettingsActivity() {
         override val settings = settingsActivity {
             title = "Settings"
             group("Common Settings") {
