@@ -129,7 +129,7 @@ Pops all fragments from the stack and adds a new fragment. (This makes it so tha
     
 Here's what that code creates (but don't forget to register activity in the manifest)
 
-<img src="Screenshot_20180423-232001.png" width="300px" />
+<img src="Screenshot_20180424-220518.png" width="300px" />
 
 ## `BaseLegalActivity`
 
@@ -198,7 +198,7 @@ Here's what that code creates (but don't forget to register activity in the mani
 
 The above DSL produces the following activity (don't forget to register the activity in the manifest):
 
-<img src="Screenshot_20180423-232001.png" width="300px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="Screenshot_20180423-232001.png" width="300px" />
+<img src="Screenshot_20180424-220527.png" width="300px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="Screenshot_20180424-220553.png" width="300px" />
 
 ## `PermissionActivity`
 
