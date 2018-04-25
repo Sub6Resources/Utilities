@@ -25,11 +25,15 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
     override fun setUp() {
         settings.groups.forEach { settingsGroup ->
             var inflater = LayoutInflater.from(this)
-            val header = inflater.inflate(R.layout.settings_grouptitle, settings_container, false)
-            header.findViewById<TextView>(R.id.setting_title).apply {
-                text = settingsGroup.title
+
+            if(settingsGroup.title.isNotEmpty()) {
+                val header = inflater.inflate(R.layout.settings_grouptitle, settings_container, false)
+                header.findViewById<TextView>(R.id.setting_title).apply {
+                    text = settingsGroup.title
+                }
+                settings_container.addView(header)
             }
-            settings_container.addView(header)
+
             settingsGroup.settings.forEach { setting ->
                 when(setting.defaultValue) {
                     is Boolean -> {

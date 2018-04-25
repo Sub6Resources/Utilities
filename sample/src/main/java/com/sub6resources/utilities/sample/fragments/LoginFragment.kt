@@ -5,6 +5,7 @@ import android.util.Log
 import com.sub6resources.utilities.BaseFragment
 import com.sub6resources.utilities.getString
 import com.sub6resources.utilities.onClick
+import com.sub6resources.utilities.sample.LegalActivity
 import com.sub6resources.utilities.sample.PreferencesActivity
 import com.sub6resources.utilities.sample.R
 import com.sub6resources.utilities.sample.api.Login
@@ -20,6 +21,10 @@ class LoginFragment: BaseFragment() {
 
         btn_submit.onClick {
             loginViewModel.login(Login(et_username.getString(), et_password.getString()))
+        }
+
+        legal.onClick {
+            baseActivity.startActivity<LegalActivity>()
         }
 
         loginViewModel.token.observe(this, Observer { token ->

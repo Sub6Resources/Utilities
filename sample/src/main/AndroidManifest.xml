@@ -23,6 +23,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sub6resources.utilities.sample.MainActivity" />
         </activity>
+        <activity android:name=".LegalActivity" android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sub6resources.utilities.sample.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
