@@ -1,10 +1,13 @@
 package com.sub6resources.utilities.sample
 
-import com.sub6resources.utilities.*
+import com.sub6resources.utilities.BaseSettingsActivity
+import com.sub6resources.utilities.group
+import com.sub6resources.utilities.setting
+import com.sub6resources.utilities.settingsActivity
 
-class PreferencesActivity: SettingsActivity() {
+class PreferencesActivity: BaseSettingsActivity() {
     override val settings = settingsActivity {
-        title = "Settingses"
+        title = "Settings"
         group("Common Settings") {
             setting("areNotificationsEnabled", false) {
                 description = "Notifications Enabled"

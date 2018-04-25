@@ -1,5 +1,6 @@
 package com.sub6resources.utilities
 
+import android.graphics.Color
 import android.support.v7.widget.SwitchCompat
 import android.support.v7.widget.Toolbar
 import android.text.InputType
@@ -9,14 +10,16 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_settings.*
 
 
-abstract class SettingsActivity : BaseActivity(R.layout.activity_settings) {
+abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
     abstract val settings: SettingsDsl
 
     override val toolbar = R.id.toolbar
 
     override fun onResume() {
         super.onResume()
-        findViewById<Toolbar>(R.id.toolbar).title = if(settings.title.isNotEmpty()) settings.title else "Settings"
+        val tempToolbar = findViewById<Toolbar>(R.id.toolbar)
+        tempToolbar.setTitleTextColor(settings.titleTextColor)
+        tempToolbar.title = if(settings.title.isNotEmpty()) settings.title else "Settings"
     }
 
     override fun setUp() {
@@ -142,6 +145,7 @@ abstract class SettingsActivity : BaseActivity(R.layout.activity_settings) {
 }
 
 data class SettingsDsl(var title: String = "") {
+    var titleTextColor = Color.WHITE
     var groups = arrayListOf<SettingsGroup>()
 }
 data class SettingsGroup(var title: String = "") {
