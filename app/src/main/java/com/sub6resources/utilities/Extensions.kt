@@ -28,6 +28,7 @@ import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.text.*
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +39,7 @@ import android.widget.SeekBar
 import com.afollestad.materialdialogs.MaterialDialog
 import com.squareup.picasso.Picasso
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -484,6 +486,41 @@ fun Retrofit.Builder.logged(baseUrl: String): Retrofit {
         client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }).build())
         addConverterFactory(GsonConverterFactory.create())
         addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+    }.build()
+}
+
+/**
+ * Builds a simple logged [Retrofit] instance with a url and an authentication token sharedPreferences key to be passed to the header.
+ */
+fun Retrofit.Builder.loggedWithAuthToken(baseUrl: String, tokenSharedPreferencesKey: String): Retrofit {
+    return this.apply {
+        baseUrl(baseUrl)
+        client(OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+                .apply {
+                    addInterceptor { chain ->
+                        val original: Request = chain.request()
+                        val request: Request = original.newBuilder()
+                                .apply {
+                                    header("Accept", "application/json")
+                                    val token = SharedPrefs.sharedPreferences.getString(tokenSharedPreferencesKey, "")
+                                    if (token.isNotEmpty()) {
+                                        Log.d("Retrofit Logger", "REQUEST HEADER: Authorization, $token")
+                                        header("Authorization", token)
+                                    } else {
+                                        Log.d("Retrofit Logger", "No Authorization")
+                                    }
+                                    method(original.method(), original.body())
+                                }
+                                .build()
+
+                        val response = chain.proceed(request)
+                        response
+                    }
+                }
+                .build())
+        addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+        addCallAdapterFactory(retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory.create())
     }.build()
 }
 

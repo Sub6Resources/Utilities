@@ -34,6 +34,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SharedPrefs.sharedPreferences = sharedPreferences
         setContentView(activityLayout)
         landingFragment?.let {
             FragmentTransaction(it, supportFragmentManager).into(fragmentTargets).switchFragment()
