@@ -131,6 +131,75 @@ Here's what that code creates (but don't forget to register activity in the mani
 
 <img src="Screenshot_20180423-232001.png" width="300px" />
 
+## `BaseLegalActivity`
+
+`BaseLegalActivity` provides a simple DSL for stuff you would find on a typical 'Legal' activity in an Android app. (Things such as terms of service, privacy policy, copyright notices, and acknowledgments for 3rd party libraries.
+
+#### Example of `BaseLegalActivity` DSL:
+
+    import com.sub6resources.utilities.*
+    
+    class LegalActivity: BaseLegalActivity() {
+        override val legal = legalActivity {
+            title = "Legal"
+            group {
+                copyright = "Copyright (c) 2018 Sub 6 Resources"
+            }
+            group {
+                title = "Terms and Privacy"
+    
+                terms {
+                    title = "Terms of Service"
+                    lastUpdatedText = "Updated 4/23/18"
+                    text = "You may use this app if you can.\nSub 6 Resources is not responsible for any Unicorns attempting to exist in (or near) Alaska."
+                }
+    
+                privacy {
+                    title = "Privacy Policy"
+                    lastUpdatedText = "Does Not Exist :("
+                }
+            }
+            group {
+                title = "3rd Party Libraries"
+    
+                acknowledgement {
+                    title = "MyLibrary"
+                    copyright = "Copyright 2048 Nobody"
+                    license = License.MIT(copyright)
+                }
+    
+                acknowledgement {
+                    title = "BoringLibrary"
+                    license = License.MIT_GENERIC
+                }
+    
+                acknowledgement {
+                    title = "SomeOtherLibrary"
+                    copyright = "Copyright (c) Some Dude, 2016"
+                    license {
+                        title = "My Favorite License"
+                        text = "You can do whatever you can. You may do nothing."
+                    }
+                }
+    
+                acknowledgement {
+                    title = "LuckyLibrary"
+                    copyright = "(c) 2017 The Three Amigos"
+                    license = License.APACHE(copyright)
+                }
+    
+                acknowledgement {
+                    title = "Meow"
+                    license = License.APACHE_GENERIC
+                }
+            }
+        }
+    }
+
+The above DSL produces the following activity (don't forget to register the activity in the manifest):
+
+<img src="Screenshot_20180423-232001.png" width="300px" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="Screenshot_20180423-232001.png" width="300px" />
+
 ## `PermissionActivity`
 
 `PermissionActivity` provides a simple way to request Android runtime permissions for API 23 and above. The `checkPermission` and `checkListOfPermission` are also available from `BaseActivity`
