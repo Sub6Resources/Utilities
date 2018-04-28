@@ -19,8 +19,7 @@ class LegalActivity: BaseLegalActivity() {
 
             privacy {
                 title = "Privacy Policy"
-                lastUpdatedText = "Never Created"
-                text = "ëggpłåńt"
+                lastUpdatedText = "Does Not Exist :("
             }
         }
         group {

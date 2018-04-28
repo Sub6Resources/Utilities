@@ -1,6 +1,9 @@
 package com.sub6resources.utilities.sample.fragments
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import com.sub6resources.utilities.BaseFragment
 import com.sub6resources.utilities.getString
@@ -29,7 +32,11 @@ class LoginFragment: BaseFragment() {
 
         loginViewModel.token.observe(this, Observer { token ->
             Log.d("TOKEN", "Token!!! ${token?.token}")
-            baseActivity.startActivity<PreferencesActivity>()
+//            baseActivity.startActivity<PreferencesActivity>()
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            baseActivity.startActivityForResult(takePictureIntent) { resultCode, data ->
+                //Perform operations on the result code and the data here
+            }
         })
     }
 }

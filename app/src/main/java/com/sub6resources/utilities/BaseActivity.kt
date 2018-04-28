@@ -30,6 +30,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     open val sideNav: NavigationView? = null
 
     private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
+    val app by lazy {application as BaseApplication}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -182,9 +183,9 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     }
 
     //Private variables to assist with the checkPermission function.
-    private var onGranted: ArrayList<() -> Unit> = ArrayList<() -> Unit>()
-    private var onDenied: ArrayList<() -> Unit> = ArrayList<() -> Unit>()
-    private var savedPermissions: ArrayList<String> = ArrayList<String>()
+    private var onGranted: ArrayList<() -> Unit> = ArrayList()
+    private var onDenied: ArrayList<() -> Unit> = ArrayList()
+    private var savedPermissions: ArrayList<String> = ArrayList()
     private var currentRequestCode = 0
 
     /**
@@ -277,16 +278,16 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         }
     }
 
-    private var savedCallbacks = ArrayList<(resultCode: Int, data: Intent) -> Unit>()
+
     private var currentRequestCodeIntent = 0
 
     fun startActivityForResult(intent: Intent, callback: (resultCode: Int, data:Intent) -> Unit) {
-        savedCallbacks.add(currentRequestCodeIntent, callback)
+        app.savedCallbacks.add(currentRequestCodeIntent, callback)
         startActivityForResult(intent, currentRequestCodeIntent)
         currentRequestCodeIntent++
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        savedCallbacks[requestCode](resultCode, data)
+        app.savedCallbacks[requestCode](resultCode, data)
     }
 
     fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
