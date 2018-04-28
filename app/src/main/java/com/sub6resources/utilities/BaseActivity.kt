@@ -281,12 +281,12 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
 
     private var currentRequestCodeIntent = 0
 
-    fun startActivityForResult(intent: Intent, callback: (resultCode: Int, data:Intent) -> Unit) {
+    fun startActivityForResult(intent: Intent, callback: (resultCode: Int, data: Intent?) -> Unit) {
         app.savedCallbacks.add(currentRequestCodeIntent, callback)
         startActivityForResult(intent, currentRequestCodeIntent)
         currentRequestCodeIntent++
     }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         app.savedCallbacks[requestCode](resultCode, data)
     }
 

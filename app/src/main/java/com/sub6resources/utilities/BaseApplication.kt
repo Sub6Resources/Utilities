@@ -7,7 +7,7 @@ import org.koin.dsl.module.Module
 
 open class BaseApplication(vararg val modules: Module): Application() {
 
-    var savedCallbacks = ArrayList<(resultCode: Int, data: Intent) -> Unit>()
+    var savedCallbacks = ArrayList<(resultCode: Int, data: Intent?) -> Unit>()
 
     override fun onCreate() {
         super.onCreate()
