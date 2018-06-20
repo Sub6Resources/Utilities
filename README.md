@@ -5,14 +5,14 @@
 
 ## Download
 
-Add utilites to your Android project using Jitpack and Gradle:
+Add **Utilites** to your Android project using Jitpack and Gradle:
 
     repositories {
       maven {url 'https://jitpack.io'}
     }
     ...
     dependencies {
-      implementation 'com.github.Sub6Resources:Utilities:1.4.2'
+      implementation 'com.github.Sub6Resources:Utilities:1.4.3'
     }
 
 ## `BaseActivity`

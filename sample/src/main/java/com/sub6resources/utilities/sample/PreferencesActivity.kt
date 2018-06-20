@@ -43,6 +43,12 @@ class PreferencesActivity: BaseSettingsActivity() {
             setting("answer", 42) {
                 description = "The answer to life, the universe, and everything"
             }
+            setting("long_answer", 100_000_000L) {
+                description = "Long Answer"
+            }
+            setting("floating_answer", 3.14159265f) {
+                description = "Float Answer"
+            }
         }
     }
 }

@@ -89,6 +89,56 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                         }
                         settings_container.addView(inflatedLayout)
                     }
+                    is Float -> {
+                        inflater = LayoutInflater.from(this)
+                        val inflatedLayout = inflater.inflate(R.layout.settings_item, settings_container, false)
+                        inflatedLayout.findViewById<TextView>(R.id.setting_title).apply {
+                            text = setting.description
+                        }
+                        val subtitleText = inflatedLayout.findViewById<TextView>(R.id.setting_subtitle).apply {
+                            text = "${sharedPreferences.getFloat(setting.key, setting.defaultValue as Float)} ${setting.units}"
+                            visibility = View.VISIBLE
+                        }
+                        inflatedLayout.onClick {
+                            dialog {
+                                title(setting.description)
+                                inputType(InputType.TYPE_NUMBER_FLAG_DECIMAL.or(InputType.TYPE_CLASS_NUMBER))
+                                input(setting.description, sharedPreferences.getFloat(setting.key, setting.defaultValue as Float).toString()) { _, input ->
+                                    if(input.isNotEmpty()) {
+                                        sharedPreferences.edit { putFloat(setting.key, input.toString().toFloat()) }
+                                        subtitleText.text = "$input ${setting.units}"
+                                    }
+                                }
+                                positiveText("Save")
+                            }.show()
+                        }
+                        settings_container.addView(inflatedLayout)
+                    }
+                    is Long -> {
+                        inflater = LayoutInflater.from(this)
+                        val inflatedLayout = inflater.inflate(R.layout.settings_item, settings_container, false)
+                        inflatedLayout.findViewById<TextView>(R.id.setting_title).apply {
+                            text = setting.description
+                        }
+                        val subtitleText = inflatedLayout.findViewById<TextView>(R.id.setting_subtitle).apply {
+                            text = "${sharedPreferences.getLong(setting.key, setting.defaultValue as Long)} ${setting.units}"
+                            visibility = View.VISIBLE
+                        }
+                        inflatedLayout.onClick {
+                            dialog {
+                                title(setting.description)
+                                inputType(InputType.TYPE_CLASS_NUMBER)
+                                input(setting.description, sharedPreferences.getLong(setting.key, setting.defaultValue as Long).toString()) { _, input ->
+                                    if(input.isNotEmpty()) {
+                                        sharedPreferences.edit { putLong(setting.key, input.toString().toLong()) }
+                                        subtitleText.text = "$input ${setting.units}"
+                                    }
+                                }
+                                positiveText("Save")
+                            }.show()
+                        }
+                        settings_container.addView(inflatedLayout)
+                    }
                     is String -> {
                         if(setting.options.isNotEmpty()) {
                             //Array of options
@@ -140,7 +190,6 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                             }
                             settings_container.addView(inflatedLayout)
                         }
-
                     }
                 }
             }

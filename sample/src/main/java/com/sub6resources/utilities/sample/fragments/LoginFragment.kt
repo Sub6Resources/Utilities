@@ -23,7 +23,8 @@ class LoginFragment: BaseFragment() {
     override fun setUp() {
 
         btn_submit.onClick {
-            loginViewModel.login(Login(et_username.getString(), et_password.getString()))
+//            loginViewModel.login(Login(et_username.getString(), et_password.getString()))
+            baseActivity.startActivity<PreferencesActivity>()
         }
 
         legal.onClick {
