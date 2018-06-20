@@ -5,7 +5,7 @@
 
 ## Download
 
-Add **Utilites** to your Android project using Jitpack and Gradle:
+Add **Utilities** to your Android project using Jitpack and Gradle:
 
     repositories {
       maven {url 'https://jitpack.io'}
