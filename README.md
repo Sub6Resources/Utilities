@@ -12,7 +12,7 @@ Add **Utilities** to your Android project using Jitpack and Gradle:
     }
     ...
     dependencies {
-      implementation 'com.github.Sub6Resources:Utilities:1.4.3'
+      implementation 'com.github.Sub6Resources:Utilities:1.5.0'
     }
 
 ## `BaseActivity`

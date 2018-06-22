@@ -2,6 +2,7 @@ package com.sub6resources.utilities
 
 import android.Manifest
 import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import org.koin.android.architecture.ext.KoinFactory
 
 
 abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -290,5 +292,9 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         app.savedCallbacks[requestCode](resultCode, data)
     }
 
+    @Deprecated("Deprecated in favor of getViewModel<ViewModel>()")
     fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
+
+    inline fun <reified T: ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, KoinFactory).get(T::class.java) }
+    inline fun <reified T: ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, KoinFactory).get(T::class.java) }
 }

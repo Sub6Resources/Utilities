@@ -6,8 +6,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.arch.lifecycle.ViewModelStores
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v7.widget.Toolbar
 import android.view.*
 import org.koin.android.architecture.ext.KoinFactory
 import org.koin.android.architecture.ext.getViewModel
@@ -87,5 +85,7 @@ abstract class BaseFragment: Fragment() {
     @Deprecated("getSharedViewModel(T::class.java) is deprecated in favor of getSharedViewModel<T>()")
     fun <T: ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
 
-    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): T = ViewModelProvider(ViewModelStores.of(this.activity!!), KoinFactory).get(T::class.java)
+    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(ViewModelStores.of(baseActivity), KoinFactory).get(T::class.java) }
+
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, KoinFactory).get(T::class.java) }
 }

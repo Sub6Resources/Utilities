@@ -18,12 +18,12 @@ import kotlinx.android.synthetic.main.fragment_login.*
 
 class LoginFragment: BaseFragment() {
     override val fragLayout = R.layout.fragment_login
-    val loginViewModel by getViewModel<LoginViewModel>()
+    val loginViewModel by getGlobalViewModel<LoginViewModel>()
 
     override fun setUp() {
 
         btn_submit.onClick {
-//            loginViewModel.login(Login(et_username.getString(), et_password.getString()))
+            loginViewModel.login(Login(et_username.getString(), et_password.getString()))
             baseActivity.startActivity<PreferencesActivity>()
         }
 
@@ -34,10 +34,10 @@ class LoginFragment: BaseFragment() {
         loginViewModel.token.observe(this, Observer { token ->
             Log.d("TOKEN", "Token!!! ${token?.token}")
 //            baseActivity.startActivity<PreferencesActivity>()
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            baseActivity.startActivityForResult(takePictureIntent) { resultCode, data ->
+//            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            baseActivity.startActivityForResult(takePictureIntent) { resultCode, data ->
                 //Perform operations on the result code and the data here
-            }
+//            }
         })
     }
 }
