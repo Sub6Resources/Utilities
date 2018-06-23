@@ -469,8 +469,8 @@ private class ViewLazy<in T, out V>(private val initializer: (T, KProperty<*>) -
 /**
  * Observe a nullable [LiveData] as if it is not nullable. All null data returned will simply be ignored.
  */
-fun <T> LifecycleOwner.observeNotNull(data: LiveData<T>, callback: (paramater: T) -> Unit) {
-    data.observe(this, Observer {
+inline fun <T> LiveData<T>.observeNotNull(lifecycleOwner: LifecycleOwner, crossinline callback: (data: T) -> Unit) {
+    this.observe(lifecycleOwner, Observer {
         it?.let{
             callback(it)
         }
@@ -527,8 +527,12 @@ fun Retrofit.Builder.loggedWithAuthToken(baseUrl: String, tokenSharedPreferences
 /**
  * A shortened version of Transformations.switchMap(trigger: LiveData): LiveData
  */
-fun <T, R: Any> LiveData<T>.switchMap(switchMap: (data: T) -> LiveData<R>): LiveData<R> {
+inline fun <T, R: Any> LiveData<T>.switchMap(crossinline switchMap: (data: T) -> LiveData<R>): LiveData<R> {
     return Transformations.switchMap(this) { switchMap(it) }
+}
+
+inline fun <T, R> LiveData<T>.map(crossinline map: (data: T) -> R): LiveData<R> {
+    return Transformations.map(this) { map(it) }
 }
 
 /**
