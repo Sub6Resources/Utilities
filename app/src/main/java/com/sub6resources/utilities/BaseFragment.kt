@@ -11,7 +11,7 @@ import org.koin.android.architecture.ext.KoinFactory
 import org.koin.android.architecture.ext.getViewModel
 
 
-abstract class BaseFragment: Fragment() {
+abstract class BaseFragment : Fragment() {
     abstract val fragLayout: Int
 
     open val menu: Int? = null
@@ -29,6 +29,9 @@ abstract class BaseFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         toolbar?.let {
             baseActivity.setSupportActionBar(view.findViewById(it))
+            if (baseActivity.parentActivityIntent != null) {
+                baseActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            }
         }
 
         setUp()
@@ -36,12 +39,12 @@ abstract class BaseFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(menu != null) {
+        if (menu != null) {
             setHasOptionsMenu(true)
         }
     }
 
-    open fun onBackPressed(){
+    open fun onBackPressed() {
         popFragment()
     }
 
@@ -55,35 +58,35 @@ abstract class BaseFragment: Fragment() {
     }
 
     override fun onCreateOptionsMenu(m: Menu?, inflater: MenuInflater?) {
-        if(menu != null) {
+        if (menu != null) {
             inflater?.inflate(menu!!, m)
         }
         super.onCreateOptionsMenu(m, inflater)
     }
 
-    fun addFragment(fragment: BaseFragment){
+    fun addFragment(fragment: BaseFragment) {
         FragmentTransaction(fragment, fragmentManager!!)
                 .into((context as BaseActivity).fragmentTargets)
                 .addFragment()
     }
 
-    fun switchFragment(fragment: BaseFragment){
+    fun switchFragment(fragment: BaseFragment) {
         FragmentTransaction(fragment, fragmentManager!!)
                 .into((context as BaseActivity).fragmentTargets)
                 .switchFragment()
     }
 
-    fun popFragment(){
+    fun popFragment() {
         fragmentManager?.popBackStack()
     }
 
     @Deprecated("getViewModel is deprecated in favor of getViewModel<T>()")
-    fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
+    fun <T : ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
 
-    inline fun <reified T: ViewModel> getViewModel(): Lazy<T> = lazy { (this as Fragment).getViewModel<T>() }
+    inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { (this as Fragment).getViewModel<T>() }
 
     @Deprecated("getSharedViewModel(T::class.java) is deprecated in favor of getSharedViewModel<T>()")
-    fun <T: ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
+    fun <T : ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
 
     inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(ViewModelStores.of(baseActivity), KoinFactory).get(T::class.java) }
 

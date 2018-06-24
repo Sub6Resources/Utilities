@@ -22,7 +22,7 @@ import android.view.View
 import org.koin.android.architecture.ext.KoinFactory
 
 
-abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     open val menu: Int? = null
     open val toolbar: Int? = null
     open val fragmentTargets: Int = 0
@@ -32,7 +32,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     open val sideNav: NavigationView? = null
 
     private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
-    val app by lazy {application as BaseApplication}
+    val app by lazy { application as BaseApplication }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +42,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         landingFragment?.let {
             FragmentTransaction(it, supportFragmentManager).into(fragmentTargets).switchFragment()
             fragmentTargets.let {
-                if(savedInstanceState == null){
+                if (savedInstanceState == null) {
                     FragmentTransaction(landingFragment as Fragment, supportFragmentManager)
                             .into(fragmentTargets)
                             .switchFragment()
@@ -51,7 +51,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         }
         toolbar?.let {
             setSupportActionBar(findViewById(it))
-            if(parentActivityIntent != null) {
+            if (parentActivityIntent != null) {
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
             }
             drawer?.let {
@@ -64,10 +64,14 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
                     R.string.drawer_open, R.string.drawer_closed) {
 
                 /** Called when a drawer has settled in a completely open state.  */
-                override fun onDrawerOpened(drawerView: View) { drawerOpened(drawerView) }
+                override fun onDrawerOpened(drawerView: View) {
+                    drawerOpened(drawerView)
+                }
 
                 /** Called when a drawer has settled in a completely closed state.  */
-                override fun onDrawerClosed(view: View) { drawerClosed(view) }
+                override fun onDrawerClosed(view: View) {
+                    drawerClosed(view)
+                }
             }
             it.addDrawerListener(actionBarDrawerToggle!!)
         }
@@ -86,7 +90,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
 
         fragmentTargets.let {
             val frag = supportFragmentManager.findFragmentById(fragmentTargets)
-            if(frag is BaseFragment){
+            if (frag is BaseFragment) {
                 frag.onBackPressed()
                 return
             }
@@ -94,22 +98,22 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         super.onBackPressed()
     }
 
-        override fun onCreateOptionsMenu(_menu: Menu): Boolean {
-            menu.isNotNull {
-                menuInflater.inflate(this.menu as Int, _menu)
-            }
-            return true
+    override fun onCreateOptionsMenu(_menu: Menu): Boolean {
+        menu.isNotNull {
+            menuInflater.inflate(this.menu as Int, _menu)
         }
+        return true
+    }
 
-        override fun onNavigationItemSelected(item: MenuItem): Boolean {
-            onNavItemSelected(item)
-            drawer?.closeDrawers()
-            drawer?.closeDrawer(sideNav!!)
-            return true
-        }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        onNavItemSelected(item)
+        drawer?.closeDrawers()
+        drawer?.closeDrawer(sideNav!!)
+        return true
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             android.R.id.home -> {
                 val intent = NavUtils.getParentActivityIntent(this)
                 intent?.let {
@@ -141,9 +145,9 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
     /**
      * Use this method instead of @onNavigationItemSelected for implementation with a navigation drawer.
      */
-    open fun onNavItemSelected(item: MenuItem){}
+    open fun onNavItemSelected(item: MenuItem) {}
 
-    open fun setUp(){}
+    open fun setUp() {}
 
     //Fragment Transactions
     fun addFragment(fragment: BaseFragment) {
@@ -175,11 +179,11 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         showFragment(fragmentToShow)
     }
 
-    fun popFragment(){
+    fun popFragment() {
         fragmentManager?.popBackStack()
     }
 
-    fun popAdd(fragment: BaseFragment){
+    fun popAdd(fragment: BaseFragment) {
         fragmentManager?.popBackStack()
         addFragment(fragment)
     }
@@ -213,13 +217,14 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
      *
      * @see recheckPermission(requestCode: Int)
      */
-    @JvmOverloads fun checkPermission(permission: String, onGranted: () -> Unit = {}, onDenied: () -> Unit = {}, showExplanation: (requestCode: Int) -> Unit = {recheckPermission(it)}) {
+    @JvmOverloads
+    fun checkPermission(permission: String, onGranted: () -> Unit = {}, onDenied: () -> Unit = {}, showExplanation: (requestCode: Int) -> Unit = { recheckPermission(it) }) {
         this.savedPermissions.add(currentRequestCode, permission)
         this.onGranted.add(currentRequestCode, onGranted)
         this.onDenied.add(currentRequestCode, onDenied)
 
-        if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 showExplanation(currentRequestCode)
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf(permission), currentRequestCode)
@@ -249,7 +254,7 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
             } else {
                 this.onGranted[requestCode]()
             }
-        } catch(e: IndexOutOfBoundsException) {
+        } catch (e: IndexOutOfBoundsException) {
             throw IllegalStateException("You must use this function inside of the checkPermission function")
         }
     }
@@ -261,7 +266,8 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
      * @param onDenied A lambda with the denied permission as a string
      * @param showExplanation Show an explanation for the permission being requested
      */
-    @JvmOverloads fun checkListOfPermissions(permissions: List<String>, onGranted: (permission: String) -> Unit = {}, onDenied: (permission: String) -> Unit = {}, showExplanation: (permission: String, requestCode: Int) -> Unit = {_,id -> recheckPermission(id)}) {
+    @JvmOverloads
+    fun checkListOfPermissions(permissions: List<String>, onGranted: (permission: String) -> Unit = {}, onDenied: (permission: String) -> Unit = {}, showExplanation: (permission: String, requestCode: Int) -> Unit = { _, id -> recheckPermission(id) }) {
         for (permission in permissions) {
             checkPermission(permission, { onGranted(permission) }, { onDenied(permission) }, { showExplanation(permission, it) })
         }
@@ -269,8 +275,8 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(grantResults.isNotEmpty()) {
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.isNotEmpty()) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onGranted[requestCode]()
             } else {
                 onDenied[requestCode]()
@@ -288,13 +294,14 @@ abstract class BaseActivity(private val activityLayout: Int): AppCompatActivity(
         startActivityForResult(intent, currentRequestCodeIntent)
         currentRequestCodeIntent++
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         app.savedCallbacks[requestCode](resultCode, data)
     }
 
     @Deprecated("Deprecated in favor of getViewModel<ViewModel>()")
-    fun <T: ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
+    fun <T : ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
 
-    inline fun <reified T: ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, KoinFactory).get(T::class.java) }
-    inline fun <reified T: ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, KoinFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, KoinFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, KoinFactory).get(T::class.java) }
 }
