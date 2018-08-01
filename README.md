@@ -14,6 +14,14 @@ Add **Utilities** to your Android project using Jitpack and Gradle:
     dependencies {
       implementation 'com.github.Sub6Resources:Utilities:1.5.0'
     }
+    
+### Or: Beta androidx Support:
+
+Add **Utilities** to your androidx project by using the beta `androidx` branch.
+
+    dependencies {
+      implementation 'com.github.Sub6Resources:Utilities:androidx-SNAPSHOT'
+    }
 
 ## `BaseActivity`
 
