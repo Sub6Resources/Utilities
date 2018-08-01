@@ -1,8 +1,8 @@
 package com.sub6resources.utilities
 
-import android.support.annotation.AnimRes
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
+import androidx.annotation.AnimRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import kotlin.properties.Delegates
 
 class FragmentTransaction(private val fragment: Fragment, private val manager: FragmentManager) {
@@ -13,14 +13,14 @@ class FragmentTransaction(private val fragment: Fragment, private val manager: F
     private var backstack_tag: String? = null
     private var tag: String? = null
     private var container: Int by Delegates.notNull()
-    private var extraLogic: (android.support.v4.app.FragmentTransaction) -> android.support.v4.app.FragmentTransaction = { it }
+    private var extraLogic: (androidx.fragment.app.FragmentTransaction) -> androidx.fragment.app.FragmentTransaction = { it }
 
     fun into(container: Int): FragmentTransaction {
         this.container = container
         return this
     }
 
-    fun extraLogic(extraLogic: (android.support.v4.app.FragmentTransaction) -> android.support.v4.app.FragmentTransaction): FragmentTransaction {
+    fun extraLogic(extraLogic: (androidx.fragment.app.FragmentTransaction) -> androidx.fragment.app.FragmentTransaction): FragmentTransaction {
         this.extraLogic = extraLogic
         return this
     }
@@ -49,12 +49,12 @@ class FragmentTransaction(private val fragment: Fragment, private val manager: F
         return this
     }
 
-    fun android.support.v4.app.FragmentTransaction.extraLogic(): android.support.v4.app.FragmentTransaction = extraLogic(this)
+    fun androidx.fragment.app.FragmentTransaction.extraLogic(): androidx.fragment.app.FragmentTransaction = extraLogic(this)
 
     fun addFragment() {
         manager.beginTransaction()
                 .extraLogic()
-                .hide(manager.findFragmentById(container)).apply {
+                .hide(manager.findFragmentById(container)!!).apply {
             if (tag != null) { add(container, fragment, tag) } else { add(container, fragment) }
             twoWayAnimation?.let { setCustomAnimations(it.enter, it.exit, it.popEnter, it.popExit) }
             oneWayAnimation?.let { setCustomAnimations(it.enter, it.exit) }
@@ -80,7 +80,7 @@ class FragmentTransaction(private val fragment: Fragment, private val manager: F
     fun showFragment() {
         manager.beginTransaction()
                 .extraLogic()
-                .show(manager.findFragmentById(container)).apply {
+                .show(manager.findFragmentById(container)!!).apply {
             if (tag != null) { add(container, fragment, tag) } else { add(container, fragment) }
             twoWayAnimation?.let { setCustomAnimations(it.enter, it.exit, it.popEnter, it.popExit) }
             oneWayAnimation?.let { setCustomAnimations(it.enter, it.exit) }
@@ -93,7 +93,7 @@ class FragmentTransaction(private val fragment: Fragment, private val manager: F
     fun hideFragment() {
         manager.beginTransaction()
                 .extraLogic()
-                .hide(manager.findFragmentById(container)).apply {
+                .hide(manager.findFragmentById(container)!!).apply {
             if (tag != null) { add(container, fragment, tag) } else { add(container, fragment) }
             twoWayAnimation?.let { setCustomAnimations(it.enter, it.exit, it.popEnter, it.popExit) }
             oneWayAnimation?.let { setCustomAnimations(it.enter, it.exit) }

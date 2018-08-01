@@ -1,8 +1,8 @@
 package com.sub6resources.utilities
 
 import android.app.Application
-import android.arch.lifecycle.ViewModelStore
-import android.arch.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import android.content.Intent
 import org.koin.android.ext.android.startKoin
 import org.koin.dsl.module.Module

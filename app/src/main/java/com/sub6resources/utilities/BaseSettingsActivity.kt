@@ -1,8 +1,8 @@
 package com.sub6resources.utilities
 
 import android.graphics.Color
-import android.support.v7.widget.SwitchCompat
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.widget.SwitchCompat
+import androidx.appcompat.widget.Toolbar
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View

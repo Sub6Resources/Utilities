@@ -1,25 +1,24 @@
 package com.sub6resources.utilities
 
 import android.Manifest
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.app.NavUtils
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import org.koin.android.architecture.ext.KoinFactory
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NavUtils
+import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.navigation.NavigationView
+import org.koin.androidx.viewmodel.ViewModelFactory
 
 
 abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -147,6 +146,10 @@ abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity
      */
     open fun onNavItemSelected(item: MenuItem) {}
 
+    /**
+     * This function is a stupid simple replacement for onCreate, so that you don't have that ugly
+     * super.onCreate call and all the other onCreate logic that tends to get put into every app
+     */
     open fun setUp() {}
 
     //Fragment Transactions
@@ -180,11 +183,11 @@ abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity
     }
 
     fun popFragment() {
-        fragmentManager?.popBackStack()
+        supportFragmentManager?.popBackStack()
     }
 
     fun popAdd(fragment: BaseFragment) {
-        fragmentManager?.popBackStack()
+        supportFragmentManager?.popBackStack()
         addFragment(fragment)
     }
 
@@ -299,9 +302,6 @@ abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity
         app.savedCallbacks[requestCode](resultCode, data)
     }
 
-    @Deprecated("Deprecated in favor of getViewModel<ViewModel>()")
-    fun <T : ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
-
-    inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, KoinFactory).get(T::class.java) }
-    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, KoinFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, ViewModelFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, ViewModelFactory).get(T::class.java) }
 }
