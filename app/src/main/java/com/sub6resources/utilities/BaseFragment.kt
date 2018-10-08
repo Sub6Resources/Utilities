@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModelByClass
+import org.koin.core.parameter.emptyParameterDefinition
 
 
 abstract class BaseFragment : Fragment() {
@@ -79,7 +81,11 @@ abstract class BaseFragment : Fragment() {
 
     inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { (this as Fragment).getViewModel<T>() }
 
-    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity, ViewModelProvider.NewInstanceFactory()).get(T::class.java) }
+//    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity, ViewModelFactory).get(T::class.java) }
 
-    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, ViewModelProvider.NewInstanceFactory()).get(T::class.java) }
+    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { getViewModelByClass(T::class, null, null, {baseActivity}, emptyParameterDefinition()) }
+
+//    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, ViewModelFactory).get(T::class.java) }
+
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { getViewModelByClass(T::class, null, null, {baseActivity.app}, emptyParameterDefinition()) }
 }
