@@ -5,7 +5,6 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.koin.androidx.viewmodel.ViewModelFactory
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
@@ -80,7 +79,7 @@ abstract class BaseFragment : Fragment() {
 
     inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { (this as Fragment).getViewModel<T>() }
 
-    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity, ViewModelFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity, ViewModelProvider.NewInstanceFactory()).get(T::class.java) }
 
-    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, ViewModelFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, ViewModelProvider.NewInstanceFactory()).get(T::class.java) }
 }

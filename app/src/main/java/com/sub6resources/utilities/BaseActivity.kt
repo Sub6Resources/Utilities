@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.navigation.NavigationView
-import org.koin.androidx.viewmodel.ViewModelFactory
 
 
 abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -302,6 +301,6 @@ abstract class BaseActivity(private val activityLayout: Int) : AppCompatActivity
         app.savedCallbacks[requestCode](resultCode, data)
     }
 
-    inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, ViewModelFactory).get(T::class.java) }
-    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, ViewModelFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(T::class.java) }
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(app, ViewModelProvider.NewInstanceFactory()).get(T::class.java) }
 }
