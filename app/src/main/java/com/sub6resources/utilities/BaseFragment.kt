@@ -1,14 +1,12 @@
 package com.sub6resources.utilities
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
-import android.arch.lifecycle.ViewModelStores
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
-import org.koin.android.architecture.ext.KoinFactory
-import org.koin.android.architecture.ext.getViewModel
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import org.koin.androidx.viewmodel.ViewModelFactory
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
 abstract class BaseFragment : Fragment() {
@@ -80,15 +78,9 @@ abstract class BaseFragment : Fragment() {
         fragmentManager?.popBackStack()
     }
 
-    @Deprecated("getViewModel is deprecated in favor of getViewModel<T>()")
-    fun <T : ViewModel> getViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(this).get(javaClass) }
-
     inline fun <reified T : ViewModel> getViewModel(): Lazy<T> = lazy { (this as Fragment).getViewModel<T>() }
 
-    @Deprecated("getSharedViewModel(T::class.java) is deprecated in favor of getSharedViewModel<T>()")
-    fun <T : ViewModel> getSharedViewModel(javaClass: Class<T>): Lazy<T> = lazy { ViewModelProviders.of(activity!!).get(javaClass) }
+    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity, ViewModelFactory).get(T::class.java) }
 
-    inline fun <reified T : ViewModel> Fragment.getSharedViewModel(): Lazy<T> = lazy { ViewModelProvider(ViewModelStores.of(baseActivity), KoinFactory).get(T::class.java) }
-
-    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, KoinFactory).get(T::class.java) }
+    inline fun <reified T : ViewModel> getGlobalViewModel(): Lazy<T> = lazy { ViewModelProvider(baseActivity.app, ViewModelFactory).get(T::class.java) }
 }

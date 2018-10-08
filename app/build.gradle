@@ -4,16 +4,16 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.1"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        targetSdkVersion 28
+        versionCode 2
+        versionName "1.6.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -31,26 +31,37 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:appcompat-v7:$support_version"
 
-    implementation "com.android.support:design:$support_version"
-    api "com.android.support:recyclerview-v7:$support_version"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
     api 'com.afollestad.material-dialogs:core:0.9.6.0'
-    api 'org.koin:koin-android:0.8.0'
-    api 'org.koin:koin-android-architecture:0.8.0'
-    api "android.arch.lifecycle:runtime:1.1.0"
-    api "android.arch.lifecycle:extensions:1.1.0"
-    api 'com.squareup.retrofit2:converter-gson:2.2.0'
-    api "io.reactivex.rxjava2:rxandroid:2.0.2"
-    api 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    api 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    api 'com.squareup.okhttp3:okhttp:3.8.0'
-    api 'com.squareup.picasso:picasso:2.5.2'
 
-    kapt "android.arch.lifecycle:compiler:1.1.0"
+    //Koin
+    def koin_version = "1.0.1"
+    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //Android Architecture Components
+    def lifecycle_version = "2.0.0"
+    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
+
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta01'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta01'
 }
 
 repositories {

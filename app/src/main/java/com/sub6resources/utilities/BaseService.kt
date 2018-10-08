@@ -5,9 +5,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 
-/**
- * Created by whitaker on 1/11/18.
- */
 abstract class BaseService: Service() {
 
     open val thisService: BaseService? = null

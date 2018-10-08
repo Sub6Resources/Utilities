@@ -3,10 +3,10 @@ package com.sub6resources.utilities
 import android.app.Activity
 import android.app.Dialog
 import android.app.NotificationManager
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.Transformations
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.Transformations
 import android.content.*
 import android.content.ClipboardManager
 import android.content.res.ColorStateList
@@ -17,15 +17,15 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.support.annotation.*
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.content.res.AppCompatResources
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.app.ActivityOptionsCompat
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.RecyclerView
 import android.text.*
 import android.util.DisplayMetrics
 import android.util.Log
@@ -59,31 +59,6 @@ fun Long.toShortTime(): String {
     val sec = TimeUnit.MILLISECONDS.toSeconds(this)
 
     return "${if (hr != 0L) "$hr:" else ""}${if (min < 10L) "0$min" else min}:${if (sec < 10L) "0$sec" else sec}"
-}
-
-/**
- * This function generates a save string from a list of variables.
- * This assumes that no variable contains the character '_'
- */
-@Deprecated("Terribly written, will be removed")
-fun generateSaveString(vararg variables: Any): String {
-    var stringToReturn = ""
-    variables.forEach{
-        if(it is Array<*>) {
-            stringToReturn += it.joinToString(",") + "_"
-        } else {
-            stringToReturn += it.toString() + "_"
-        }
-    }
-    return stringToReturn.substringBeforeLast("_")
-}
-
-@Deprecated("Terribly written, will be removed")
-fun loadFromSaveString(saveString: String, vararg setVariable: (value: String) -> Unit) {
-    saveString.split("_").forEachIndexed {i, value ->
-        setVariable[i](value)
-    }
-
 }
 
 /**
@@ -311,9 +286,6 @@ fun String.removeFileExtension(): String = if(this.contains(".") && this.lastInd
  */
 fun String.removeFileName(): String = if(this.contains("/") && this.lastIndexOf("/") > 0) { this.substring(0, this.lastIndexOf("/")+1)} else {this}
 
-@Deprecated(""+"Just use + or plus(), much faster to type", ReplaceWith("this.plus(s)"))
-fun String.append(s: String): String = this.plus(s)
-
 /**
  * Calls a callback if any of the views is clicked
  */
@@ -327,12 +299,6 @@ fun View.bulkClick(ids: Array<Int>, _onClick: (View) -> Unit) {
 fun Array<View>.bulkClick(_onClick: (View) -> Unit) {
     forEach { it.apply { onClick { v -> _onClick.invoke(v) } } }
 }
-
-/**
- * Does the exact same thing as an elvis operator
- */
-@Deprecated("Just use an elvis operator!", ReplaceWith("this ?: default"))
-fun String?.nullSafe(default: String = ""): String = this ?: default
 
 /**
  * Gets the string of an [EditText]. No more [Editable]!
@@ -391,7 +357,7 @@ fun View.enable() {
 /**
  * Checks if an [EditText] is blank.
  */
-fun EditText.isBlank(): Boolean = getString().isNullOrBlank()
+fun EditText.isBlank(): Boolean = getString().isBlank()
 
 /**
  * Adds min and max to a [SeekBar] and adds a pretty looking callback for it.
@@ -531,6 +497,9 @@ inline fun <T, R: Any> LiveData<T>.switchMap(crossinline switchMap: (data: T) ->
     return Transformations.switchMap(this) { switchMap(it) }
 }
 
+/**
+ * A shortened version of Transformations.map
+ */
 inline fun <T, R> LiveData<T>.map(crossinline map: (data: T) -> R): LiveData<R> {
     return Transformations.map(this) { map(it) }
 }
@@ -540,7 +509,7 @@ inline fun <T, R> LiveData<T>.map(crossinline map: (data: T) -> R): LiveData<R> 
  * or down respectively
  */
 fun RecyclerView.bindFloatingActionButton(fab: FloatingActionButton) = this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-    override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
         if (dy > 0 && fab.isShown) {
             fab.hide()
