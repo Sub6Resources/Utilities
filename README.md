@@ -12,7 +12,7 @@ Add **Utilities** to your Android project using Jitpack and Gradle:
     }
     ...
     dependencies {
-      implementation 'com.github.Sub6Resources:Utilities:1.6.2'
+      implementation 'com.github.Sub6Resources:Utilities:1.6.3'
     }
     
 ### Or: Legacy Android Support Library Support:
