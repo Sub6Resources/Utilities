@@ -37,6 +37,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
     api 'com.afollestad.material-dialogs:core:2.0.0-rc7'
+    implementation 'com.afollestad.material-dialogs:input:2.0.0-rc7'
 
     //Koin
     def koin_version = "1.0.1"

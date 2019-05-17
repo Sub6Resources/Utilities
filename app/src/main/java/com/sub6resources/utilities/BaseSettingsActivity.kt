@@ -7,6 +7,7 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import com.afollestad.materialdialogs.list.listItems
 import kotlinx.android.synthetic.main.activity_settings.*
 
 
@@ -76,7 +77,7 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                         }
                         inflatedLayout.onClick {
                             dialog {
-                                title(setting.description)
+                                title(text = setting.description)
                                 inputType(InputType.TYPE_CLASS_NUMBER)
                                 input(setting.description, sharedPreferences.getInt(setting.key, setting.defaultValue as Int).toString()) { _, input ->
                                     if(input.isNotEmpty()) {
@@ -84,7 +85,7 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                                         subtitleText.text = "$input ${setting.units}"
                                     }
                                 }
-                                positiveText("Save")
+                                positiveButton(text = "Save")
                             }.show()
                         }
                         settings_container.addView(inflatedLayout)
@@ -101,7 +102,7 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                         }
                         inflatedLayout.onClick {
                             dialog {
-                                title(setting.description)
+                                title(text = setting.description)
                                 inputType(InputType.TYPE_NUMBER_FLAG_DECIMAL.or(InputType.TYPE_CLASS_NUMBER))
                                 input(setting.description, sharedPreferences.getFloat(setting.key, setting.defaultValue as Float).toString()) { _, input ->
                                     if(input.isNotEmpty()) {
@@ -109,7 +110,7 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                                         subtitleText.text = "$input ${setting.units}"
                                     }
                                 }
-                                positiveText("Save")
+                                positiveButton(text = "Save")
                             }.show()
                         }
                         settings_container.addView(inflatedLayout)
@@ -126,7 +127,7 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                         }
                         inflatedLayout.onClick {
                             dialog {
-                                title(setting.description)
+                                title(text = setting.description)
                                 inputType(InputType.TYPE_CLASS_NUMBER)
                                 input(setting.description, sharedPreferences.getLong(setting.key, setting.defaultValue as Long).toString()) { _, input ->
                                     if(input.isNotEmpty()) {
@@ -134,7 +135,7 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                                         subtitleText.text = "$input ${setting.units}"
                                     }
                                 }
-                                positiveText("Save")
+                                positiveButton(text = "Save")
                             }.show()
                         }
                         settings_container.addView(inflatedLayout)
@@ -154,15 +155,15 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                             }
                             inflatedLayout.onClick {
                                 dialog {
-                                    title(setting.description)
-                                    items(setting.options.toList())
+                                    title(text = setting.description)
+                                    listItems(items = setting.options.toList())
                                     itemsCallbackSingleChoice(setting.options.indexOf(sharedPreferences.getString(setting.key, setting.defaultValue as String))) { _, _, _, text ->
                                         sharedPreferences.edit { putString(setting.key, text.toString()) }
                                         subtitleText.text = text.toString()
                                         //This allows the item to be selected. Possible customization here in the future.
                                         return@itemsCallbackSingleChoice true
                                     }
-                                    positiveText("Save")
+                                    positiveButton(text = "Save")
                                 }.show()
                             }
                             settings_container.addView(inflatedLayout)
@@ -180,12 +181,12 @@ abstract class BaseSettingsActivity : BaseActivity(R.layout.activity_settings) {
                             }
                             inflatedLayout.onClick {
                                 dialog {
-                                    title(setting.description)
+                                    title(text = setting.description)
                                     input(setting.description, sharedPreferences.getString(setting.key, setting.defaultValue as String)) { dialog, input ->
                                         sharedPreferences.edit { putString(setting.key, input.toString()) }
                                         subtitleText.text = input.toString()
                                     }
-                                    positiveText("Save")
+                                    positiveButton(text = "Save")
                                 }.show()
                             }
                             settings_container.addView(inflatedLayout)

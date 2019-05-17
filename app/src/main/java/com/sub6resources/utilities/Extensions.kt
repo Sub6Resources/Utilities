@@ -123,10 +123,10 @@ fun EditText.onTextChanged(onTextChanged: (editable: Editable) -> Unit) {
  * Opens a [MaterialDialog] builder
  * @see <a href="https://github.com/afollestad/material-dialogs">https://github.com/afollestad/material-dialogs</a>
  */
-fun Context.dialog(builder: MaterialDialog.Builder.() -> Unit): MaterialDialog {
-    return MaterialDialog.Builder(this).apply {
+fun Context.dialog(builder: MaterialDialog.() -> Unit): MaterialDialog {
+    return MaterialDialog(this).apply {
         builder()
-    }.build()
+    }
 }
 
 /**
